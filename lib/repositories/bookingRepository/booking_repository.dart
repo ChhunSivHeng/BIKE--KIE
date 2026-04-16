@@ -1,4 +1,4 @@
-import '../model/booking.dart';
+import '../../model/booking.dart';
 
 abstract class BookingRepository {
   Future<Booking> createBooking({
