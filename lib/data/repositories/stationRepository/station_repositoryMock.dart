@@ -4,7 +4,7 @@ import 'station_repository.dart';
 
 class StationRepositoryMock implements StationRepository {
   Future<void> _simulateNetwork() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   @override

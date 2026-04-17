@@ -16,41 +16,40 @@ class AppBottomNavBar extends StatelessWidget {
   static const double height = 76;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: Color(0x11000000))),
-      ),
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _NavItem(
-            label: 'PASSES',
-            icon: Icons.confirmation_number_outlined,
-            isActive: activeTab == BottomNavTab.passes,
-            onTap: () => onTabSelected?.call(BottomNavTab.passes),
-          ),
-          _NavItem(
-            label: 'MAP',
-            icon: Icons.map_outlined,
-            isActive: activeTab == BottomNavTab.map,
-            onTap: () => onTabSelected?.call(BottomNavTab.map),
-          ),
-          _NavItem(
-            label: 'PROFILE',
-            icon: Icons.person_outline,
-            isActive: activeTab == BottomNavTab.profile,
-            onTap: () => onTabSelected?.call(BottomNavTab.profile),
-          ),
-        ],
-      ),
-    );
-  }
+Widget build(BuildContext context) {
+  return Container(
+    height: height,
+    decoration: const BoxDecoration(
+      color: AppColors.white,
+      border: Border(top: BorderSide(color: Color(0x11000000))),
+    ),
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _NavItem(
+          label: 'PASSES',
+          icon: Icons.confirmation_number_outlined,
+          isActive: activeTab == BottomNavTab.passes,
+          onTap: () => onTabSelected?.call(BottomNavTab.passes),
+        ),
+        _NavItem(
+          label: 'MAP',
+          icon: Icons.map_outlined,
+          isActive: activeTab == BottomNavTab.map,
+          onTap: () => onTabSelected?.call(BottomNavTab.map),
+        ),
+        _NavItem(
+          label: 'PROFILE',
+          icon: Icons.person_outline,
+          isActive: activeTab == BottomNavTab.profile,
+          onTap: () => onTabSelected?.call(BottomNavTab.profile),
+        ),
+      ],
+    ),
+  );
 }
-
+}
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.label,
@@ -91,7 +90,7 @@ class _NavItem extends StatelessWidget {
                 fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                 letterSpacing: 0.4,
               ),
-            ),
+            ), 
           ],
         ),
       ),

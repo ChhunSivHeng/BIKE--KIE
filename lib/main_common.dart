@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class BikkieApp extends StatelessWidget {
-  const BikkieApp({super.key});
+import 'ui/screens/map_screen/map_screen.dart';
+import 'utils/app_theme.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Bikkie Booking App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(''),
+void mainCommon(List<InheritedProvider> providers) {
+  runApp(
+    MultiProvider(
+      providers: providers,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: AppColors.primary,
+          scaffoldBackgroundColor: Colors.white,
         ),
+        home: const MapScreen(),
       ),
-    );
-  }
+    ),
+  );
 }
