@@ -19,14 +19,14 @@ class PassViewModel extends ChangeNotifier {
 
     try {
       final rawPasses = await _repo.getPasses();
-      final selected = rawPasses.where((p) => p.isActive).cast<Pass?>().firstWhere(
-        (p) => p != null,
-        orElse: () => null,
+      _state = PassState.success(
+        passes: rawPasses,
+        selectedPass: null,
+        isProcessingPayment: false,
       );
-      _state = PassState.success(passes: rawPasses, selectedPass: selected);
       notifyListeners();
     } catch (_) {
-      _state = PassState.error('Failed to load passes.');
+      _state = PassState.error('Faile load passes');
       notifyListeners();
     }
   }
@@ -35,7 +35,28 @@ class PassViewModel extends ChangeNotifier {
     if (_state.status != PassStatus.success) {
       return;
     }
+    _state = PassState.success(
+      passes: _state.passes,
+      selectedPass: selected,
+      isProcessingPayment: false,
+    );
+    notifyListeners();
+  }
 
+  Future<void> processPayment() async {
+    if (_state.status != PassStatus.success ||
+        _state.selectedPass == null ||
+        _state.isProcessingPayment) {
+      return;
+    }
+    final selected = _state.selectedPass!;
+    _state = PassState.success(
+      passes: _state.passes,
+      selectedPass: selected,
+      isProcessingPayment: true,
+    );
+    notifyListeners();
+    await Future.delayed(const Duration(seconds: 3));
     final updated = _state.passes
         .map(
           (p) => Pass(
@@ -48,9 +69,12 @@ class PassViewModel extends ChangeNotifier {
           ),
         )
         .toList(growable: false);
-
     final active = updated.firstWhere((p) => p.isActive);
-    _state = PassState.success(passes: updated, selectedPass: active);
+    _state = PassState.success(
+      passes: updated,
+      selectedPass: active,
+      isProcessingPayment: false,
+    );
     notifyListeners();
   }
 }
