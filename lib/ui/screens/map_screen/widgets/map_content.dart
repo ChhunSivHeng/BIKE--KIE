@@ -8,6 +8,7 @@ import '../../../../model/station.dart';
 import '../../../../ui/widgets/navigation/app_header.dart';
 import '../../../../ui/widgets/navigation/bottom_nav_bar.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
+import '../../pass_screen/pass_screen.dart';
 import '../view_model/map_model.dart';
 import '../states/station_state.dart';
 import 'station_marker.dart';
@@ -32,14 +33,12 @@ class _MapView extends StatefulWidget {
 class _MapViewState extends State<_MapView> {
   final MapController _mapController = MapController();
 
-  // Filter state
   int _minBikes = 0;
   bool _showOnlyAvailable = false;
 
   static final LatLng _phnomPenh = LatLng(11.5564, 104.9282);
   static const double _zoom = 14;
 
-  // Optimized padding for better map centering as the main focus
   static const double _mapTopPadding = AppHeader.height + 8 + 54 + 8;
 
   List<Marker> _buildStationMarkers(List<Station> stations) {
@@ -124,7 +123,6 @@ class _MapViewState extends State<_MapView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Modern loading animation
               Container(
                 width: 64,
                 height: 64,
@@ -163,7 +161,6 @@ class _MapViewState extends State<_MapView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Error icon with gradient background
                 Container(
                   width: 80,
                   height: 80,
@@ -220,7 +217,6 @@ class _MapViewState extends State<_MapView> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Base → flutter_map (OpenStreetMap)
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.only(
@@ -236,7 +232,6 @@ class _MapViewState extends State<_MapView> {
                   minZoom: 11,
                 ),
                 children: [
-                  // Modern, clean map tiles with better contrast (CartoDB Light)
                   TileLayer(
                     urlTemplate:
                         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
@@ -245,14 +240,12 @@ class _MapViewState extends State<_MapView> {
                     userAgentPackageName: 'com.example.bike_kie',
                     maxZoom: 20,
                   ),
-                  // Animated marker layer
                   MarkerLayer(markers: markers),
                 ],
               ),
             ),
           ),
 
-          // Top → app_header
           Positioned(
             top: 0,
             left: 0,
@@ -260,7 +253,6 @@ class _MapViewState extends State<_MapView> {
             child: AppHeader(onMenuTap: () {}),
           ),
 
-          // Floating → search_bar (Enhanced positioning and spacing)
           Positioned(
             top: AppHeader.height + 10,
             left: 12,
@@ -283,83 +275,6 @@ class _MapViewState extends State<_MapView> {
             ),
           ),
 
-          // Current location indicator (overlay) - Modern pulse animation with improved styling
-          Positioned(
-            left: 0,
-            right: 0,
-            top: _mapTopPadding,
-            bottom: AppBottomNavBar.height,
-            child: IgnorePointer(
-              child: Center(
-                child: Transform.translate(
-                  offset: const Offset(0, -12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Enhanced pulse ring animation
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.primary.withOpacity(0.25),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.1),
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      // Main location dot with enhanced styling
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.white,
-                          border: Border.all(
-                            color: AppColors.primary,
-                            width: 3,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 12,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.primary,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.4),
-                                  blurRadius: 6,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Bottom → bottom_nav_bar (Enhanced with better visual hierarchy)
           Positioned(
             left: 0,
             right: 0,
@@ -376,7 +291,28 @@ class _MapViewState extends State<_MapView> {
               ),
               child: AppBottomNavBar(
                 activeTab: BottomNavTab.map,
-                onTabSelected: (_) {},
+                onTabSelected: (tab) {
+                  if (!mounted) {
+                    return;
+                  }
+                  switch (tab) {
+                    case BottomNavTab.map:
+                      break;
+                    case BottomNavTab.passes:
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const PassScreen(),
+                        ),
+                      );
+                    case BottomNavTab.profile:
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Profile screen coming soon'),
+                          duration: Duration(milliseconds: 1500),
+                        ),
+                      );
+                  }
+                },
               ),
             ),
           ),
@@ -425,21 +361,18 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
     setState(() {
       var results = widget.allStations;
 
-      // Apply search filter
       if (query.isNotEmpty) {
         results = results
             .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
 
-      // Apply bike filter
       if (widget.minBikes > 0) {
         results = results
             .where((s) => s.availableBikes >= widget.minBikes)
             .toList();
       }
 
-      // Apply availability filter
       if (widget.showOnlyAvailable) {
         results = results.where((s) => s.hasBikes).toList();
       }
@@ -470,7 +403,6 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
           ),
           child: Column(
             children: [
-              // Drag handle for better UX
               Container(
                 margin: const EdgeInsets.only(top: 8),
                 width: 40,
@@ -480,7 +412,6 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              // Search input with enhanced modern design
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                 child: TextField(
@@ -540,7 +471,6 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                   style: const TextStyle(color: AppColors.black, fontSize: 15),
                 ),
               ),
-              // Results list with improved styling
               Expanded(
                 child: _filteredStations.isEmpty
                     ? Center(
@@ -639,7 +569,6 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                                       const SizedBox(height: 12),
                                       Row(
                                         children: [
-                                          // Bikes available
                                           Container(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: AppSpacing.lg,
@@ -675,7 +604,6 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                                             ),
                                           ),
                                           const SizedBox(width: AppSpacing.md),
-                                          // Parking slots available
                                           Container(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: AppSpacing.lg,
@@ -779,7 +707,6 @@ class _FilterDialogState extends State<FilterDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with better styling
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -810,7 +737,6 @@ class _FilterDialogState extends State<FilterDialog> {
               ),
               const SizedBox(height: 24),
 
-              // Minimum bikes section
               Text(
                 'Minimum Available Bikes',
                 style: const TextStyle(
@@ -830,7 +756,6 @@ class _FilterDialogState extends State<FilterDialog> {
                 ),
                 child: Column(
                   children: [
-                    // Slider
                     SliderTheme(
                       data: SliderThemeData(
                         activeTrackColor: const Color(0xFFC41E3A),
@@ -857,7 +782,6 @@ class _FilterDialogState extends State<FilterDialog> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // Value indicator with better styling
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -885,7 +809,6 @@ class _FilterDialogState extends State<FilterDialog> {
               ),
               const SizedBox(height: 24),
 
-              // Availability toggle with enhanced styling
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -948,7 +871,6 @@ class _FilterDialogState extends State<FilterDialog> {
               ),
               const SizedBox(height: 32),
 
-              // Action buttons with enhanced styling
               Row(
                 children: [
                   Expanded(

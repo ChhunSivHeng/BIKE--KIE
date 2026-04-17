@@ -45,7 +45,7 @@ class AppBottomNavBar extends StatelessWidget {
             isActive: activeTab == BottomNavTab.profile,
             onTap: () => onTabSelected?.call(BottomNavTab.profile),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -91,8 +91,8 @@ class _NavItem extends StatelessWidget {
                 fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                 letterSpacing: 0.4,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

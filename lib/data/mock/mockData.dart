@@ -1,4 +1,5 @@
 import '../../model/station.dart' as app_model;
+import '../../model/pass.dart' as pass_model;
 
 class MockData {
   const MockData._();
@@ -30,6 +31,30 @@ class MockData {
     },
   ];
 
+  static const List<Map<String, Object>> _passRaw = <Map<String, Object>>[
+    <String, Object>{
+      'id': 'pass_day',
+      'type': 'day',
+      'price': 5.0,
+      'durationDays': 1,
+      'isActive': false,
+    },
+    <String, Object>{
+      'id': 'pass_monthly',
+      'type': 'monthly',
+      'price': 29.0,
+      'durationDays': 30,
+      'isActive': true,
+    },
+    <String, Object>{
+      'id': 'pass_annual',
+      'type': 'annual',
+      'price': 199.0,
+      'durationDays': 365,
+      'isActive': false,
+    },
+  ];
+
   static List<Map<String, Object>> get stations => _stationRaw
       .map(
         (m) => <String, Object>{
@@ -54,4 +79,29 @@ class MockData {
         ),
       )
       .toList(growable: false);
+
+  static List<pass_model.Pass> get passRepositoryPasses {
+    final now = DateTime.now();
+    return _passRaw
+        .map((m) {
+          final type = switch (m['type'] as String) {
+            'day' => pass_model.PassType.day,
+            'monthly' => pass_model.PassType.monthly,
+            'annual' => pass_model.PassType.annual,
+            _ => pass_model.PassType.day,
+          };
+
+          final durationDays = (m['durationDays'] as num).toInt();
+
+          return pass_model.Pass(
+            id: m['id'] as String,
+            type: type,
+            price: (m['price'] as num).toDouble(),
+            startDate: now,
+            endDate: now.add(Duration(days: durationDays)),
+            isActive: m['isActive'] as bool,
+          );
+        })
+        .toList(growable: false);
+  }
 }
