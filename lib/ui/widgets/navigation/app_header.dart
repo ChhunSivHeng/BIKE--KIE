@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../utils/app_theme.dart';
 
 class AppHeader extends StatelessWidget {
-  const AppHeader({
-    super.key,
-    this.onMenuTap,
-    this.title = 'BIKE-KIE',
-  });
+  const AppHeader({super.key, this.onMenuTap, this.title = 'BIKE-KIE'});
 
   final VoidCallback? onMenuTap;
   final String title;
@@ -22,7 +19,7 @@ class AppHeader extends StatelessWidget {
           children: [
             IconButton(
               onPressed: onMenuTap,
-              icon: const Icon(Icons.menu, color: Colors.black87),
+              icon: const Icon(Icons.menu, color: AppColors.black),
               tooltip: 'Menu',
             ),
             Expanded(
@@ -30,7 +27,7 @@ class AppHeader extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    color: Color(0xFFE53935),
+                    color: AppColors.primary,
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
                     letterSpacing: 0.4,
