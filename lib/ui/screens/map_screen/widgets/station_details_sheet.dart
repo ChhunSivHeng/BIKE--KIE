@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/station.dart';
+import '../../booking_screen/booking_screen.dart';
 import '../view_model/station_details_model.dart';
 import 'available_bikes_section.dart';
 import 'booking_action_button.dart';
-import 'booking_confirmation_dialog.dart';
 import 'nearby_stations_section.dart';
 import 'station_info_card.dart';
 import 'station_stats_section.dart';
@@ -46,14 +46,15 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
     super.dispose();
   }
 
-  void _handleBookBike() => BookingConfirmationDialog.show(
-    context,
-    stationName: _viewModel.currentStation.name,
-    onConfirm: () {
-      _viewModel.bookBike();
-      showBookingSuccessSnackBar(context);
-    },
-  );
+  void _handleBookBike() {
+    // Navigate to booking screen with the current station
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookingScreen(station: _viewModel.currentStation),
+      ),
+    );
+  }
 
   List<Widget> _buildContent(StationDetailsViewModel vm) => [
     StationDetailsCard(station: vm.currentStation),
