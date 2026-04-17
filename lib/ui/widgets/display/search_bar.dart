@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../utils/app_theme.dart';
 
-class AppSearchBar extends StatelessWidget {
+class AppSearchBar extends StatefulWidget {
   const AppSearchBar({
     super.key,
     this.hintText = 'Where are you going?',
@@ -13,49 +14,140 @@ class AppSearchBar extends StatelessWidget {
   final VoidCallback? onFilterTap;
 
   @override
+  State<AppSearchBar> createState() => _AppSearchBarState();
+}
+
+class _AppSearchBarState extends State<AppSearchBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _hoverController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _shadowAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _hoverController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(
+      CurvedAnimation(parent: _hoverController, curve: Curves.easeInOut),
+    );
+    _shadowAnimation = Tween<double>(begin: 0, end: 1.0).animate(
+      CurvedAnimation(parent: _hoverController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _hoverController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
-        child: Container(
-          height: 54,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x22000000),
-                blurRadius: 16,
-                offset: Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search, color: Colors.black54),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  hintText,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.black45,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+    return MouseRegion(
+      onEnter: (_) => _hoverController.forward(),
+      onExit: (_) => _hoverController.reverse(),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: AnimatedBuilder(
+            animation: _shadowAnimation,
+            builder: (context, child) {
+              return Container(
+                height: 56,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(28),
+                  // Modern gradient border effect
+                  border: Border.all(
+                    color: Color.lerp(
+                      AppColors.gray50,
+                      AppColors.primary,
+                      _shadowAnimation.value * 0.3,
+                    )!,
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(
+                        0.15 * _shadowAnimation.value,
+                      ),
+                      blurRadius: 16 + (8 * _shadowAnimation.value),
+                      offset: Offset(0, 6 + (2 * _shadowAnimation.value)),
+                      spreadRadius: 0,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(
+                        0.08 * (1 - _shadowAnimation.value),
+                      ),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                      spreadRadius: 0,
+                    ),
+                  ],
                 ),
-              ),
-              const VerticalDivider(width: 20, thickness: 1),
-              IconButton(
-                onPressed: onFilterTap,
-                icon: const Icon(Icons.tune, color: Colors.black54),
-                tooltip: 'Filter',
-              ),
-            ],
+                child: Row(
+                  children: [
+                    // Search icon with better styling
+                    Icon(Icons.search, color: AppColors.primary, size: 20),
+                    const SizedBox(width: AppSpacing.md),
+                    // Search text with improved typography
+                    Expanded(
+                      child: Text(
+                        widget.hintText,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppColors.gray500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                    // Divider with modern styling
+                    Container(
+                      height: 24,
+                      width: 1.5,
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppColors.gray100.withOpacity(0),
+                            AppColors.gray300,
+                            AppColors.gray100.withOpacity(0),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Filter button with improved styling
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: widget.onFilterTap,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(
+                            Icons.tune,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),

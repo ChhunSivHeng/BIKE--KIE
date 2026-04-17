@@ -1,47 +1,130 @@
 import 'package:flutter/material.dart';
+import '../../../../../utils/app_theme.dart';
 
-class StationMarker extends StatelessWidget {
-  const StationMarker({
-    super.key,
-    required this.availableBikes,
-    this.onTap,
-  });
+class StationMarker extends StatefulWidget {
+  const StationMarker({super.key, required this.availableBikes, this.onTap});
 
   final int availableBikes;
   final VoidCallback? onTap;
 
   @override
+  State<StationMarker> createState() => _StationMarkerState();
+}
+
+class _StationMarkerState extends State<StationMarker>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final hasBikes = availableBikes > 0;
-    final borderColor = hasBikes ? const Color(0xFFE53935) : const Color(0xFFBDBDBD);
-    final textColor = hasBikes ? const Color(0xFFE53935) : const Color(0xFF9E9E9E);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 44,
-          height: 44,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: borderColor, width: 2.5),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 10,
-                offset: Offset(0, 6),
+    final hasBikes = widget.availableBikes > 0;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) {
+        _animationController.reverse();
+      },
+      onExit: (_) {
+        _animationController.forward();
+      },
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Container(
+            width: 48,
+            height: 52,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              // Modern gradient background
+              gradient: hasBikes
+                  ? AppColors.primaryGradient
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppColors.gray300, AppColors.gray100],
+                    ),
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(AppRadius.lg),
+                topRight: const Radius.circular(AppRadius.lg),
+                bottomLeft: const Radius.circular(AppRadius.lg),
+                bottomRight: const Radius.circular(2),
               ),
-            ],
-          ),
-          child: Text(
-            availableBikes.toString().padLeft(2, '0'),
-            style: TextStyle(
-              color: textColor,
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
+              // Enhanced shadow with two layers
+              boxShadow: hasBikes ? AppShadows.redGlow : AppShadows.md,
+            ),
+            // Inner content with white background and pin effect
+            child: Stack(
+              children: [
+                // Pin notch at bottom
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x22000000),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Main content
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Bike icon
+                      Icon(
+                        Icons.two_wheeler,
+                        color: hasBikes ? AppColors.primary : AppColors.gray400,
+                        size: 18,
+                      ),
+                      const SizedBox(height: 2),
+                      // Bike count
+                      Text(
+                        widget.availableBikes.toString(),
+                        style: TextStyle(
+                          color: hasBikes
+                              ? AppColors.primary
+                              : AppColors.gray500,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          height: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

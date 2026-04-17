@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../utils/app_theme.dart';
 
 enum BottomNavTab { map, passes, profile }
 
@@ -19,7 +20,7 @@ class AppBottomNavBar extends StatelessWidget {
     return Container(
       height: height,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         border: Border(top: BorderSide(color: Color(0x11000000))),
       ),
       padding: const EdgeInsets.only(bottom: 6),
@@ -65,20 +66,23 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xFFE53935);
-    const inactiveColor = Color(0xFFB0B0B0);
+    const activeColor = AppColors.primary;
+    const inactiveColor = AppColors.gray400;
     final color = isActive ? activeColor : inactiveColor;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               label,
               style: TextStyle(

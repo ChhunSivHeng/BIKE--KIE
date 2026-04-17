@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../utils/app_theme.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:provider/provider.dart';
@@ -30,10 +31,15 @@ class _MapView extends StatefulWidget {
 class _MapViewState extends State<_MapView> {
   final MapController _mapController = MapController();
 
+  // Filter state
+  int _minBikes = 0;
+  bool _showOnlyAvailable = false;
+
   static final LatLng _phnomPenh = LatLng(11.5564, 104.9282);
   static const double _zoom = 14;
 
-  static const double _mapTopPadding = AppHeader.height + 12 + 54 + 18;
+  // Optimized padding for better map centering as the main focus
+  static const double _mapTopPadding = AppHeader.height + 8 + 54 + 8;
 
   List<Marker> _buildStationMarkers(List<Station> stations) {
     return stations
@@ -57,6 +63,8 @@ class _MapViewState extends State<_MapView> {
       isScrollControlled: true,
       builder: (context) => SearchResultsSheet(
         allStations: allStations,
+        minBikes: _minBikes,
+        showOnlyAvailable: _showOnlyAvailable,
         onStationSelected: (station) {
           Navigator.pop(context);
           _mapController.move(
@@ -68,15 +76,62 @@ class _MapViewState extends State<_MapView> {
     );
   }
 
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => FilterDialog(
+        initialMinBikes: _minBikes,
+        initialShowOnlyAvailable: _showOnlyAvailable,
+        onApply: (minBikes, showOnlyAvailable) {
+          setState(() {
+            _minBikes = minBikes;
+            _showOnlyAvailable = showOnlyAvailable;
+          });
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MapViewModel>();
     final state = vm.state;
 
     if (state.status == Status.loading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.white,
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Modern loading animation
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Loading stations...',
+                style: TextStyle(
+                  color: AppColors.gray700,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
@@ -89,15 +144,49 @@ class _MapViewState extends State<_MapView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Error icon with gradient background
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    Icons.error_outline,
+                    color: AppColors.error,
+                    size: 40,
+                  ),
+                ),
+                const SizedBox(height: 24),
                 Text(
                   state.error ?? 'Something went wrong.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
+                  style: const TextStyle(
+                    color: AppColors.gray700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                  ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: vm.loadStations,
-                  child: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                  ),
+                  child: const Text(
+                    'Try Again',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ],
             ),
@@ -124,13 +213,19 @@ class _MapViewState extends State<_MapView> {
                 options: MapOptions(
                   initialCenter: _phnomPenh,
                   initialZoom: _zoom,
+                  maxZoom: 19,
+                  minZoom: 11,
                 ),
                 children: [
+                  // Modern, clean map tiles with better contrast (CartoDB Light)
                   TileLayer(
                     urlTemplate:
-                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    subdomains: const ['a', 'b', 'c', 'd'],
                     userAgentPackageName: 'com.example.bike_kie',
+                    maxZoom: 20,
                   ),
+                  // Animated marker layer
                   MarkerLayer(markers: markers),
                 ],
               ),
@@ -145,18 +240,30 @@ class _MapViewState extends State<_MapView> {
             child: AppHeader(onMenuTap: () {}),
           ),
 
-          // Floating → search_bar
+          // Floating → search_bar (Enhanced positioning and spacing)
           Positioned(
-            top: AppHeader.height + 12,
-            left: 16,
-            right: 16,
-            child: AppSearchBar(
-              onTap: () => _showSearchSheet(state.stations),
-              onFilterTap: () {},
+            top: AppHeader.height + 10,
+            left: 12,
+            right: 12,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.black.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: AppSearchBar(
+                onTap: () => _showSearchSheet(state.stations),
+                onFilterTap: _showFilterDialog,
+              ),
             ),
           ),
 
-          // Current location indicator (overlay)
+          // Current location indicator (overlay) - Modern pulse animation with improved styling
           Positioned(
             left: 0,
             right: 0,
@@ -165,36 +272,92 @@ class _MapViewState extends State<_MapView> {
             child: IgnorePointer(
               child: Center(
                 child: Transform.translate(
-                  offset: const Offset(34, 18),
-                  child: Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E88E5),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x22000000),
-                          blurRadius: 10,
-                          offset: Offset(0, 6),
+                  offset: const Offset(0, -12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Enhanced pulse ring animation
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.25),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.1),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 6),
+                      // Main location dot with enhanced styling
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.white,
+                          border: Border.all(
+                            color: AppColors.primary,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.3),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.primary,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.4),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
 
-          // Bottom → bottom_nav_bar
+          // Bottom → bottom_nav_bar (Enhanced with better visual hierarchy)
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: AppBottomNavBar(
-              activeTab: BottomNavTab.map,
-              onTabSelected: (_) {},
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.black.withOpacity(0.06),
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: AppBottomNavBar(
+                activeTab: BottomNavTab.map,
+                onTabSelected: (_) {},
+              ),
             ),
           ),
         ],
@@ -205,12 +368,16 @@ class _MapViewState extends State<_MapView> {
 
 class SearchResultsSheet extends StatefulWidget {
   final List<Station> allStations;
+  final int minBikes;
+  final bool showOnlyAvailable;
   final Function(Station) onStationSelected;
 
   const SearchResultsSheet({
     super.key,
     required this.allStations,
     required this.onStationSelected,
+    this.minBikes = 0,
+    this.showOnlyAvailable = false,
   });
 
   @override
@@ -236,13 +403,28 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
 
   void _updateSearch(String query) {
     setState(() {
-      if (query.isEmpty) {
-        _filteredStations = widget.allStations;
-      } else {
-        _filteredStations = widget.allStations
+      var results = widget.allStations;
+
+      // Apply search filter
+      if (query.isNotEmpty) {
+        results = results
             .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
+
+      // Apply bike filter
+      if (widget.minBikes > 0) {
+        results = results
+            .where((s) => s.availableBikes >= widget.minBikes)
+            .toList();
+      }
+
+      // Apply availability filter
+      if (widget.showOnlyAvailable) {
+        results = results.where((s) => s.hasBikes).toList();
+      }
+
+      _filteredStations = results;
     });
   }
 
@@ -250,96 +432,559 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
+      initialChildSize: 0.6,
+      maxChildSize: 0.95,
+      minChildSize: 0.3,
       builder: (context, scrollController) {
-        return Column(
-          children: [
-            // Search input
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextField(
-                controller: _searchController,
-                onChanged: _updateSearch,
-                decoration: InputDecoration(
-                  hintText: 'Search stations...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            _updateSearch('');
-                          },
-                        )
-                      : null,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withOpacity(0.08),
+                blurRadius: 20,
+                spreadRadius: -2,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Drag handle for better UX
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.gray200,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-            // Results list
-            Expanded(
-              child: _filteredStations.isEmpty
-                  ? Center(
-                      child: Text(
-                        _searchController.text.isEmpty
-                            ? 'No stations available'
-                            : 'No stations found',
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontSize: 14,
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      controller: scrollController,
-                      itemCount: _filteredStations.length,
-                      itemBuilder: (context, index) {
-                        final station = _filteredStations[index];
-                        return ListTile(
-                          title: Text(station.name),
-                          subtitle: Row(
-                            children: [
-                              const Icon(
-                                Icons.two_wheeler,
-                                size: 16,
-                                color: Colors.green,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${station.availableBikes} bikes',
-                                style: const TextStyle(color: Colors.green),
-                              ),
-                              const SizedBox(width: 12),
-                              const Icon(
-                                Icons.local_parking,
-                                size: 16,
-                                color: Colors.orange,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${station.totalSlots - station.availableBikes} slots',
-                                style: const TextStyle(color: Colors.orange),
-                              ),
-                            ],
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.black54,
-                          ),
-                          onTap: () => widget.onStationSelected(station),
-                        );
-                      },
+              // Search input with enhanced modern design
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _updateSearch,
+                  decoration: InputDecoration(
+                    hintText: 'Search stations...',
+                    hintStyle: const TextStyle(
+                      color: AppColors.gray400,
+                      fontSize: 15,
                     ),
-            ),
-          ],
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(
+                              Icons.clear,
+                              color: AppColors.primary,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              _updateSearch('');
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderSide: const BorderSide(
+                        color: AppColors.gray100,
+                        width: 1.5,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderSide: const BorderSide(
+                        color: AppColors.gray100,
+                        width: 1.5,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderSide: const BorderSide(
+                        color: AppColors.primary,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                      horizontal: AppSpacing.lg,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.gray50,
+                  ),
+                  style: const TextStyle(color: AppColors.black, fontSize: 15),
+                ),
+              ),
+              // Results list with improved styling
+              Expanded(
+                child: _filteredStations.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _searchController.text.isEmpty
+                                  ? Icons.location_city
+                                  : Icons.search_off,
+                              size: 48,
+                              color: const Color(0xFFCBD5E1),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              _searchController.text.isEmpty
+                                  ? 'No stations available'
+                                  : 'No stations found',
+                              style: const TextStyle(
+                                color: Color(0xFF64748B),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                        itemCount: _filteredStations.length,
+                        itemBuilder: (context, index) {
+                          final station = _filteredStations[index];
+                          final availableSlots =
+                              station.totalSlots - station.availableBikes;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 8,
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => widget.onStationSelected(station),
+                                borderRadius: BorderRadius.circular(14),
+                                child: Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: AppColors.gray100,
+                                      width: 1.2,
+                                    ),
+                                    color: AppColors.gray50,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.black.withOpacity(
+                                          0.02,
+                                        ),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              station.name,
+                                              style: const TextStyle(
+                                                color: AppColors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 12,
+                                            color: AppColors.gray400,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          // Bikes available
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: AppSpacing.lg,
+                                              vertical: AppSpacing.sm,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primary
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    AppRadius.sm,
+                                                  ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.two_wheeler,
+                                                  size: 14,
+                                                  color: AppColors.primary,
+                                                ),
+                                                const SizedBox(
+                                                  width: AppSpacing.xs,
+                                                ),
+                                                Text(
+                                                  '${station.availableBikes}',
+                                                  style: const TextStyle(
+                                                    color: AppColors.primary,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: AppSpacing.md),
+                                          // Parking slots available
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: AppSpacing.lg,
+                                              vertical: AppSpacing.sm,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primary
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    AppRadius.sm,
+                                                  ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.local_parking,
+                                                  size: 14,
+                                                  color: AppColors.primary,
+                                                ),
+                                                const SizedBox(
+                                                  width: AppSpacing.xs,
+                                                ),
+                                                Text(
+                                                  '$availableSlots',
+                                                  style: const TextStyle(
+                                                    color: AppColors.primary,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         );
       },
+    );
+  }
+}
+
+class FilterDialog extends StatefulWidget {
+  final int initialMinBikes;
+  final bool initialShowOnlyAvailable;
+  final Function(int, bool) onApply;
+
+  const FilterDialog({
+    super.key,
+    required this.initialMinBikes,
+    required this.initialShowOnlyAvailable,
+    required this.onApply,
+  });
+
+  @override
+  State<FilterDialog> createState() => _FilterDialogState();
+}
+
+class _FilterDialogState extends State<FilterDialog> {
+  late int _minBikes;
+  late bool _showOnlyAvailable;
+
+  @override
+  void initState() {
+    super.initState();
+    _minBikes = widget.initialMinBikes;
+    _showOnlyAvailable = widget.initialShowOnlyAvailable;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 12,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withOpacity(0.15),
+              blurRadius: 24,
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with better styling
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Filter Stations',
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.gray100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: AppColors.gray600,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Minimum bikes section
+              Text(
+                'Minimum Available Bikes',
+                style: const TextStyle(
+                  color: AppColors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.gray50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.gray100, width: 1.2),
+                ),
+                child: Column(
+                  children: [
+                    // Slider
+                    SliderTheme(
+                      data: SliderThemeData(
+                        activeTrackColor: const Color(0xFFC41E3A),
+                        inactiveTrackColor: const Color(0xFFE2E8F0),
+                        thumbColor: const Color(0xFFC41E3A),
+                        overlayColor: const Color(0xFFC41E3A).withOpacity(0.2),
+                        trackHeight: 6,
+                        thumbShape: const RoundSliderThumbShape(
+                          elevation: 0,
+                          enabledThumbRadius: 10,
+                        ),
+                      ),
+                      child: Slider(
+                        value: _minBikes.toDouble(),
+                        min: 0,
+                        max: 20,
+                        divisions: 20,
+                        label: '$_minBikes bikes',
+                        onChanged: (value) {
+                          setState(() {
+                            _minBikes = value.toInt();
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Value indicator with better styling
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        'Showing stations with $_minBikes or more bikes',
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Availability toggle with enhanced styling
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _showOnlyAvailable
+                      ? AppColors.primary.withOpacity(0.08)
+                      : AppColors.gray50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: _showOnlyAvailable
+                        ? AppColors.primary.withOpacity(0.4)
+                        : AppColors.gray100,
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Transform.scale(
+                      scale: 1.3,
+                      child: Checkbox(
+                        value: _showOnlyAvailable,
+                        onChanged: (value) {
+                          setState(() {
+                            _showOnlyAvailable = value ?? false;
+                          });
+                        },
+                        activeColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Show only available stations',
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Stations with at least one bike',
+                            style: TextStyle(
+                              color: AppColors.gray500,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Action buttons with enhanced styling
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        side: BorderSide(
+                          color: AppColors.primary.withOpacity(0.4),
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          widget.onApply(_minBikes, _showOnlyAvailable),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 4,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Apply Filters',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
