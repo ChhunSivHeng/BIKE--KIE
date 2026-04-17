@@ -43,7 +43,7 @@ class StationCardWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: BookingTheme.spacingSmall),
                   Text(
-                    BookingUtils.getLocationText(station.availableBikes),
+                    BookingUtils.getLocationText(station.bikeAmounts),
                     style: TextStyle(
                       color: AppColors.gray600,
                       fontSize: 12,
