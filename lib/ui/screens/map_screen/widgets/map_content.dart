@@ -4,7 +4,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:provider/provider.dart';
 
-import '../../../../model/station.dart';
 import '../../../../ui/widgets/navigation/app_header.dart';
 import '../../../../ui/widgets/navigation/bottom_nav_bar.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
