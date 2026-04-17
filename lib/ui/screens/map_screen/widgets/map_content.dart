@@ -8,6 +8,7 @@ import '../../../../model/station.dart';
 import '../../../../ui/widgets/navigation/app_header.dart';
 import '../../../../ui/widgets/navigation/bottom_nav_bar.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
+import '../../pass_screen/pass_screen.dart';
 import '../view_model/map_model.dart';
 import '../states/station_state.dart';
 import 'station_marker.dart';
@@ -270,7 +271,28 @@ class _MapViewState extends State<_MapView> {
               ),
               child: AppBottomNavBar(
                 activeTab: BottomNavTab.map,
-                onTabSelected: (_) {},
+                onTabSelected: (tab) {
+                  if (!mounted) {
+                    return;
+                  }
+                  switch (tab) {
+                    case BottomNavTab.map:
+                      break;
+                    case BottomNavTab.passes:
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const PassScreen(),
+                        ),
+                      );
+                    case BottomNavTab.profile:
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Profile screen coming soon'),
+                          duration: Duration(milliseconds: 1500),
+                        ),
+                      );
+                  }
+                },
               ),
             ),
           ),
