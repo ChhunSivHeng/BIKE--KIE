@@ -4,12 +4,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:provider/provider.dart';
 
-import '../../../../model/station.dart';
 import '../../../../ui/widgets/navigation/app_header.dart';
-import '../../../../ui/widgets/navigation/bottom_nav_bar.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
-import '../../pass_screen/pass_screen.dart';
-import '../view_model/map_model.dart';
+import '../view_model/map_view_model.dart';
 import '../states/station_state.dart';
 import 'station_marker.dart';
 
@@ -37,8 +34,6 @@ class _MapViewState extends State<_MapView> {
 
   static final LatLng _phnomPenh = LatLng(11.5564, 104.9282);
   static const double _zoom = 14;
-
-  static const double _mapTopPadding = AppHeader.height + 8 + 54 + 8;
 
   List<Marker> _buildStationMarkers(List<Station> stations) {
     return stations
@@ -199,30 +194,24 @@ class _MapViewState extends State<_MapView> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: _mapTopPadding,
-                bottom: AppBottomNavBar.height,
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: _phnomPenh,
+                initialZoom: _zoom,
+                maxZoom: 19,
+                minZoom: 11,
               ),
-              child: FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: _phnomPenh,
-                  initialZoom: _zoom,
-                  maxZoom: 19,
-                  minZoom: 11,
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                  subdomains: const ['a', 'b', 'c'],
+                  userAgentPackageName: 'com.example.bike_kie',
+                  maxZoom: 20,
                 ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                    subdomains: const ['a', 'b', 'c', 'd'],
-                    userAgentPackageName: 'com.example.bike_kie',
-                    maxZoom: 20,
-                  ),
-                  MarkerLayer(markers: markers),
-                ],
-              ),
+                MarkerLayer(markers: markers),
+              ],
             ),
           ),
 
@@ -255,47 +244,6 @@ class _MapViewState extends State<_MapView> {
             ),
           ),
 
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.black.withOpacity(0.06),
-                    blurRadius: 16,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: AppBottomNavBar(
-                activeTab: BottomNavTab.map,
-                onTabSelected: (tab) {
-                  if (!mounted) {
-                    return;
-                  }
-                  switch (tab) {
-                    case BottomNavTab.map:
-                      break;
-                    case BottomNavTab.passes:
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const PassScreen(),
-                        ),
-                      );
-                    case BottomNavTab.profile:
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile screen coming soon'),
-                          duration: Duration(milliseconds: 1500),
-                        ),
-                      );
-                  }
-                },
-              ),
-            ),
-          ),
         ],
       ),
     );

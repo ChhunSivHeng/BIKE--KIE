@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'view_model/map_model.dart';
+import 'view_model/map_view_model.dart';
 import 'widgets/map_content.dart';
 
 class MapScreen extends StatelessWidget {

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../../model/pass.dart';
 import '../../../../utils/app_theme.dart';
 import '../../../widgets/navigation/app_header.dart';
-import '../../../widgets/navigation/bottom_nav_bar.dart';
 import '../../map_screen/map_screen.dart';
 import '../states/pass_state.dart';
 import '../view_model/pass_model.dart';
@@ -89,7 +88,6 @@ class PassContent extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(
                     top: AppHeader.height + 12,
-                    bottom: AppBottomNavBar.height + 8,
                   ),
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
@@ -205,35 +203,6 @@ class PassContent extends StatelessWidget {
                 right: 0,
                 top: 0,
                 child: AppHeader(),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Builder(
-                  builder: (context) => AppBottomNavBar(
-                    activeTab: BottomNavTab.passes,
-                    onTabSelected: (tab) {
-                      switch (tab) {
-                        case BottomNavTab.map:
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute<void>(
-                              builder: (_) => const MapScreen(),
-                            ),
-                          );
-                        case BottomNavTab.passes:
-                          break;
-                        case BottomNavTab.profile:
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Profile is coming soon'),
-                              duration: Duration(milliseconds: 1500),
-                            ),
-                          );
-                      }
-                    },
-                  ),
-                ),
               ),
             ],
           );
