@@ -221,6 +221,7 @@ class _MapViewState extends State<_MapView> {
                   TileLayer(
                     urlTemplate:
                         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    retinaMode: true,
                     subdomains: const ['a', 'b', 'c', 'd'],
                     userAgentPackageName: 'com.example.bike_kie',
                     maxZoom: 20,

@@ -28,16 +28,16 @@ class AppBottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _NavItem(
-            label: 'MAP',
-            icon: Icons.map_outlined,
-            isActive: activeTab == BottomNavTab.map,
-            onTap: () => onTabSelected?.call(BottomNavTab.map),
-          ),
-          _NavItem(
             label: 'PASSES',
             icon: Icons.confirmation_number_outlined,
             isActive: activeTab == BottomNavTab.passes,
             onTap: () => onTabSelected?.call(BottomNavTab.passes),
+          ),
+          _NavItem(
+            label: 'MAP',
+            icon: Icons.map_outlined,
+            isActive: activeTab == BottomNavTab.map,
+            onTap: () => onTabSelected?.call(BottomNavTab.map),
           ),
           _NavItem(
             label: 'PROFILE',
@@ -76,13 +76,13 @@ class _NavItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
+          vertical: 6.0,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 3),
             Text(
               label,
               style: TextStyle(
