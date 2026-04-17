@@ -1,22 +1,13 @@
-enum BikeStatus {
-  available,
-  empty,
-}
-
 class Bike {
   final String id;
-  final String stationId;
-  final BikeStatus status;
-  final int batteryLevel;
+  final int? batteryLevel; // null for mechanical bike
 
   const Bike({
     required this.id,
-    required this.stationId,
-    required this.status,
-    required this.batteryLevel,
+    this.batteryLevel,
   });
 
   @override
   String toString() =>
-      'Bike(id: $id, stationId: $stationId, status: $status, batteryLevel: $batteryLevel)';
+      'Bike(id: $id, batteryLevel: $batteryLevel)';
 }

@@ -11,8 +11,8 @@ class StationDetailsViewModel extends ChangeNotifier {
   Station get currentStation => _currentStation;
   bool get isFavorite => _isFavorite;
   List<Station> get allStations => _allStations;
-  bool get isLowAvailability => _currentStation.availableBikes <= 2;
-  bool get hasAvailableBikes => _currentStation.availableBikes > 0;
+  bool get isLowAvailability => _currentStation.availableBikes.length <= 2;
+  bool get hasAvailableBikes => _currentStation.availableBikes.isNotEmpty;
 
   StationDetailsViewModel({
     required Station initialStation,

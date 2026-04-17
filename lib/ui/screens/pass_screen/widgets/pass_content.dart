@@ -80,6 +80,10 @@ class PassContent extends StatelessWidget {
           }
 
           final selected = state.selectedPass;
+          final activePass = state.passes.cast<Pass?>().firstWhere(
+                (p) => p != null && p.isActive,
+                orElse: () => null,
+              );
 
           return Stack(
             children: [
@@ -109,7 +113,7 @@ class PassContent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      if (selected != null)
+                      if (activePass != null || selected != null)
                         Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(14),
@@ -121,9 +125,11 @@ class PassContent extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'CURRENT ACTIVE PASS',
-                                style: TextStyle(
+                              Text(
+                                activePass != null
+                                    ? 'CURRENT ACTIVE PASS'
+                                    : 'SELECTED PLAN',
+                                style: const TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
@@ -132,7 +138,7 @@ class PassContent extends StatelessWidget {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                _activePassTitle(selected),
+                                _activePassTitle(activePass ?? selected!),
                                 style: const TextStyle(
                                   color: AppColors.black,
                                   fontSize: 23 / 2,
@@ -141,9 +147,72 @@ class PassContent extends StatelessWidget {
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                'Expires on ${_formatDate(selected.endDate)}',
+                                'Expires on ${_formatDate((activePass ?? selected!).endDate)}',
                                 style: const TextStyle(
                                   color: AppColors.gray600,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              if (state.isProcessingPayment) ...[
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: const [
+                                    SizedBox(
+                                      height: 14,
+                                      width: 14,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Processing payment...',
+                                      style: TextStyle(
+                                        color: AppColors.gray600,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ],
+                          ),
+                        )
+                      else
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F5F7),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: AppColors.gray300),
+                          ),
+                          child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'INVALID PASS',
+                                style: TextStyle(
+                                  color: AppColors.gray500,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.6,
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                'No Subscription',
+                                style: TextStyle(
+                                  color: AppColors.gray600,
+                                  fontSize: 23 / 2,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: 3),
+                              Text(
+                                'Subscribe to start riding',
+                                style: TextStyle(
+                                  color: AppColors.gray500,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -158,23 +227,20 @@ class PassContent extends StatelessWidget {
                             pass: pass,
                             isSelected: state.selectedPass?.id == pass.id,
                             isCurrent: pass.isActive,
-                            onTap: () => vm.selectPass(pass),
+                            onTap: state.isProcessingPayment
+                                ? () {}
+                                : () => vm.selectPass(pass),
                           ),
                         ),
                       ),
                       if (selected != null) ...[
                         const SizedBox(height: 16),
                         FilledButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Processing payment for ${_activePassTitle(selected)}...',
-                                ),
-                                duration: const Duration(milliseconds: 2000),
-                              ),
-                            );
-                          },
+                          onPressed: state.isProcessingPayment
+                              ? null
+                              : () async {
+                                  await vm.processPayment();
+                                },
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
@@ -183,9 +249,11 @@ class PassContent extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
-                            'Process Payment',
-                            style: TextStyle(
+                          child: Text(
+                            state.isProcessingPayment
+                                ? 'Processing...'
+                                : 'Process Payment',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.3,

@@ -196,13 +196,13 @@ class _AnimatedStationSwitchCardState extends State<_AnimatedStationSwitchCard>
                         Row(
                           children: [
                             const Icon(
-                              Icons.two_wheeler,
+                              Icons.pedal_bike,
                               color: AppColors.gray500,
                               size: 14,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${widget.station.availableBikes} bikes available',
+                              '${widget.station.bikeAmounts} bikes available',
                               style: const TextStyle(
                                 color: AppColors.gray600,
                                 fontSize: 12,

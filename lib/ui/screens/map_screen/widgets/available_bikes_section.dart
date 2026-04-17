@@ -65,11 +65,11 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
           ),
           const SizedBox(height: 12),
           // Principle 6: Recognition rather than recall - Show only available bikes
-          if (widget.station.availableBikes > 0)
+          if (widget.station.bikeAmounts > 0)
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: widget.station.availableBikes,
+              itemCount: widget.station.bikeAmounts,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -196,7 +196,7 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
-                  Icons.two_wheeler,
+                  Icons.pedal_bike,
                   color: AppColors.primary,
                   size: 20,
                 ),

@@ -77,7 +77,7 @@ class _StationMarkerState extends State<StationMarker>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.two_wheeler,
+                        Icons.pedal_bike,
                         color: hasBikes ? Colors.white : AppColors.gray400,
                         size: 18,
                       ),

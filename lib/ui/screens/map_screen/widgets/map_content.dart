@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../model/station.dart';
 import '../../../../utils/app_theme.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
@@ -6,8 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../ui/widgets/navigation/app_header.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
+import '../../../../utils/async_value.dart';
 import '../view_model/map_view_model.dart';
-import '../states/station_state.dart';
 import 'station_marker.dart';
 import 'station_details_sheet.dart';
 
@@ -44,7 +45,7 @@ class _MapViewState extends State<_MapView> {
             width: 44,
             height: 44,
             child: StationMarker(
-              availableBikes: s.availableBikes,
+              availableBikes: s.bikeAmounts,
               onTap: () {
                 _showStationDetails(stations, s);
               },
@@ -109,9 +110,9 @@ class _MapViewState extends State<_MapView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MapViewModel>();
-    final state = vm.state;
+    AsyncValue<List<Station>> data = vm.data;
 
-    if (state.status == Status.loading) {
+    if (data.state == AsyncValueState.loading) {
       return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -147,7 +148,7 @@ class _MapViewState extends State<_MapView> {
       );
     }
 
-    if (state.status == Status.error) {
+    if (data.state == AsyncValueState.error) {
       return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -171,7 +172,7 @@ class _MapViewState extends State<_MapView> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  state.error ?? 'Something went wrong.',
+                  data.error.toString().isEmpty ? 'Something went wrong.' : data.error.toString(),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.gray700,
@@ -206,7 +207,7 @@ class _MapViewState extends State<_MapView> {
       );
     }
 
-    final markers = _buildStationMarkers(state.stations);
+    final markers = _buildStationMarkers(data.data!);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -257,7 +258,7 @@ class _MapViewState extends State<_MapView> {
                 ],
               ),
               child: AppSearchBar(
-                onTap: () => _showSearchSheet(state.stations),
+                onTap: () => _showSearchSheet(data.data!),
                 onFilterTap: _showFilterDialog,
               ),
             ),
@@ -316,12 +317,12 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
 
       if (widget.minBikes > 0) {
         results = results
-            .where((s) => s.availableBikes >= widget.minBikes)
+            .where((s) => s.bikeAmounts >= widget.minBikes)
             .toList();
       }
 
       if (widget.showOnlyAvailable) {
-        results = results.where((s) => s.hasBikes).toList();
+        results = results.where((s) => s.bikeAmounts > 0).toList();
       }
 
       _filteredStations = results;
@@ -455,7 +456,7 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                         itemBuilder: (context, index) {
                           final station = _filteredStations[index];
                           final availableSlots =
-                              station.totalSlots - station.availableBikes;
+                              station.totalSlots - station.bikeAmounts;
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 4,
@@ -532,7 +533,7 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                                             child: Row(
                                               children: [
                                                 const Icon(
-                                                  Icons.two_wheeler,
+                                                  Icons.pedal_bike,
                                                   size: 14,
                                                   color: AppColors.primary,
                                                 ),
@@ -540,7 +541,7 @@ class _SearchResultsSheetState extends State<SearchResultsSheet> {
                                                   width: AppSpacing.xs,
                                                 ),
                                                 Text(
-                                                  '${station.availableBikes}',
+                                                  '${station.bikeAmounts}',
                                                   style: const TextStyle(
                                                     color: AppColors.primary,
                                                     fontSize: 13,
