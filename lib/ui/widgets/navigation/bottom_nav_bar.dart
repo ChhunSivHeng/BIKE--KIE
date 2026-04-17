@@ -17,38 +17,33 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      minimum: const EdgeInsets.only(bottom: 6),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: height),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.white,
-            border: Border(top: BorderSide(color: Color(0x11000000))),
+    return Container(
+      height: height,
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: Color(0x11000000))),
+      ),
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _NavItem(
+            label: 'PASSES',
+            icon: Icons.confirmation_number_outlined,
+            isActive: activeTab == BottomNavTab.passes,
+            onTap: () => onTabSelected?.call(BottomNavTab.passes),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _NavItem(
-                label: 'MAP',
-                icon: Icons.map_outlined,
-                isActive: activeTab == BottomNavTab.map,
-                onTap: () => onTabSelected?.call(BottomNavTab.map),
-              ),
-              _NavItem(
-                label: 'PASSES',
-                icon: Icons.confirmation_number_outlined,
-                isActive: activeTab == BottomNavTab.passes,
-                onTap: () => onTabSelected?.call(BottomNavTab.passes),
-              ),
-              _NavItem(
-                label: 'PROFILE',
-                icon: Icons.person_outline,
-                isActive: activeTab == BottomNavTab.profile,
-                onTap: () => onTabSelected?.call(BottomNavTab.profile),
-              ),
-            ],
+          _NavItem(
+            label: 'MAP',
+            icon: Icons.map_outlined,
+            isActive: activeTab == BottomNavTab.map,
+            onTap: () => onTabSelected?.call(BottomNavTab.map),
+          ),
+          _NavItem(
+            label: 'PROFILE',
+            icon: Icons.person_outline,
+            isActive: activeTab == BottomNavTab.profile,
+            onTap: () => onTabSelected?.call(BottomNavTab.profile),
           ),
         ),
       ),
@@ -75,33 +70,26 @@ class _NavItem extends StatelessWidget {
     const inactiveColor = AppColors.gray400;
     final color = isActive ? activeColor : inactiveColor;
 
-    return Semantics(
-      button: true,
-      selected: isActive,
-      label: label,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.xs,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 11,
-                  fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
-                  letterSpacing: 0.4,
-                ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: 6.0,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                letterSpacing: 0.4,
               ),
             ],
           ),
