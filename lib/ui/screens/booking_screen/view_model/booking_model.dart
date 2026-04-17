@@ -5,7 +5,7 @@ import '../../../../model/user.dart';
 
 class BookingViewModel extends ChangeNotifier {
   final Station? _station;
-  User _user = const User(id: 'user_001', activePass: null); // Mock user
+  User _user = const User(id: 'user_001', activePass: null); // Mock data
 
   BookingViewModel({Station? station}) : _station = station;
 
@@ -24,19 +24,18 @@ class BookingViewModel extends ChangeNotifier {
   String? get activePassEndDate =>
       _user.activePass?.endDate.toString().split(' ')[0];
 
-  /// Confirm booking with current pass
   void confirmBooking() {
     // TODO: Call API to confirm booking
     // TODO: Update station availability
     debugPrint(
       'Booking confirmed for station: ${_station?.name} with pass: $activePassType',
     );
+    // notifyListeners() triggers UI rebuild when complete
   }
 
-  /// Simulate buying a pass after browsing
   void buyAndSetPass(Pass passSelected) {
     _user = User(id: _user.id, activePass: passSelected);
-    notifyListeners();
+    notifyListeners(); // Broadcast to all listening widgets
   }
 
   /// Simulate buying single ticket

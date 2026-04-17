@@ -11,6 +11,7 @@ class SuccessContent extends StatefulWidget {
 
 class _SuccessContentState extends State<SuccessContent>
     with SingleTickerProviderStateMixin {
+  // Local animation state - does NOT drill down (avoiding state drilling)
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -36,6 +37,7 @@ class _SuccessContentState extends State<SuccessContent>
 
   @override
   void dispose() {
+    // Proper resource cleanup (Listenable pattern - like ChangeNotifier disposal)
     _controller.dispose();
     super.dispose();
   }

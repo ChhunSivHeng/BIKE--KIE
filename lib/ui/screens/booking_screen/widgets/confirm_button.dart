@@ -3,7 +3,8 @@ import '../../../../utils/app_theme.dart';
 import 'booking_theme.dart';
 import 'booking_constants.dart';
 
-/// Confirm booking button widget
+/// Confirm booking button widget (MVVM: View → calls ViewModel action)
+/// Pure UI component - receives callback to trigger booking
 class ConfirmButton extends StatelessWidget {
   final VoidCallback onPressed;
 

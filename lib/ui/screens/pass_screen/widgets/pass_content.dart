@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../../model/pass.dart';
 import '../../../../utils/app_theme.dart';
 import '../../../widgets/navigation/app_header.dart';
-import '../../map_screen/map_screen.dart';
 import '../states/pass_state.dart';
 import '../view_model/pass_model.dart';
 import 'pass_card.dart';
