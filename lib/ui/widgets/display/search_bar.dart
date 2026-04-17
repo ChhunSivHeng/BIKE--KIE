@@ -62,7 +62,6 @@ class _AppSearchBarState extends State<AppSearchBar>
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(28),
-                  // Modern gradient border effect
                   border: Border.all(
                     color: Color.lerp(
                       AppColors.gray50,
@@ -92,10 +91,8 @@ class _AppSearchBarState extends State<AppSearchBar>
                 ),
                 child: Row(
                   children: [
-                    // Search icon with better styling
                     Icon(Icons.search, color: AppColors.primary, size: 20),
                     const SizedBox(width: AppSpacing.md),
-                    // Search text with improved typography
                     Expanded(
                       child: Text(
                         widget.hintText,
@@ -109,7 +106,6 @@ class _AppSearchBarState extends State<AppSearchBar>
                         ),
                       ),
                     ),
-                    // Divider with modern styling
                     Container(
                       height: 24,
                       width: 1.5,
@@ -128,7 +124,6 @@ class _AppSearchBarState extends State<AppSearchBar>
                         ),
                       ),
                     ),
-                    // Filter button with improved styling
                     Material(
                       color: Colors.transparent,
                       child: InkWell(

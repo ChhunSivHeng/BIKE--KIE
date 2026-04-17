@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 
-/// BIKE-KIE Brand Colors - Following design system
 class AppColors {
-  // Primary brand colors - Deep Red/Crimson (Main brand color)
-  static const Color primary = Color(0xFFC41E3A); // Deep Red - Primary brand
-  static const Color primaryDark = Color(0xFFA01830); // Darker Red
-  static const Color primaryLight = Color(0xFFE63946); // Lighter Red
-  static const Color primaryVeryLight = Color(0xFFFAECED); // Very light red background
+  static const Color primary = Color(0xFFC41E3A);
+  static const Color primaryDark = Color(0xFFA01830);
+  static const Color primaryLight = Color(0xFFE63946);
+  static const Color primaryVeryLight = Color(0xFFFAECED);
 
-  // Accent colors
-  static const Color accent = Color(0xFFC41E3A); // Match primary red
-  static const Color accentLight = Color(0xFFFFDFE5); // Light red
-  static const Color success = Color(0xFF059669); // Green for success
-  static const Color warning = Color(0xFFF59E0B); // Amber for warnings
-  static const Color error = Color(0xFFC41E3A); // Use primary red for errors
+  static const Color accent = Color(0xFFC41E3A);
+  static const Color accentLight = Color(0xFFFFDFE5);
+  static const Color success = Color(0xFF059669);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color error = Color(0xFFC41E3A);
 
-  // Neutral colors - Professional gray scale
-  static const Color black = Color(0xFF0F172A); // Very dark slate
+  static const Color black = Color(0xFF0F172A);
   static const Color white = Color(0xFFFFFFFF);
   static const Color gray50 = Color(0xFFF8FAFC);
   static const Color gray100 = Color(0xFFF1F5F9);
@@ -27,12 +23,10 @@ class AppColors {
   static const Color gray600 = Color(0xFF475569);
   static const Color gray700 = Color(0xFF334155);
 
-  // Semantic background colors
   static const Color success_bg = Color(0xFFECFDF5);
   static const Color warning_bg = Color(0xFFFEF3C7);
   static const Color error_bg = Color(0xFFFAECED);
 
-  // Gradient colors for enhanced visuals
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -46,7 +40,6 @@ class AppColors {
   );
 }
 
-/// BIKE-KIE App Theme - Modern card-based design with red brand
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -160,8 +153,6 @@ class AppTheme {
         fontWeight: FontWeight.w500,
         letterSpacing: 0.3,
       ),
-    ),
-    // Elevated Button - Primary Red
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,

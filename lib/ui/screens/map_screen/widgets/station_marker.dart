@@ -56,7 +56,6 @@ class _StationMarkerState extends State<StationMarker>
             height: 52,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              // Modern gradient background
               gradient: hasBikes
                   ? AppColors.primaryGradient
                   : LinearGradient(
@@ -70,52 +69,23 @@ class _StationMarkerState extends State<StationMarker>
                 bottomLeft: const Radius.circular(AppRadius.lg),
                 bottomRight: const Radius.circular(2),
               ),
-              // Enhanced shadow with two layers
               boxShadow: hasBikes ? AppShadows.redGlow : AppShadows.md,
             ),
-            // Inner content with white background and pin effect
-            child: Stack(
-              children: [
-                // Pin notch at bottom
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    width: 14,
-                    height: 14,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x22000000),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Main content
-                Padding(
+            child: Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Bike icon
                       Icon(
                         Icons.two_wheeler,
-                        color: hasBikes ? AppColors.primary : AppColors.gray400,
+                        color: hasBikes ? Colors.white : AppColors.gray400,
                         size: 18,
                       ),
                       const SizedBox(height: 2),
-                      // Bike count
                       Text(
                         widget.availableBikes.toString(),
                         style: TextStyle(
-                          color: hasBikes
-                              ? AppColors.primary
-                              : AppColors.gray500,
+                          color: hasBikes ? Colors.white : AppColors.gray500,
                           fontWeight: FontWeight.w800,
                           fontSize: 12,
                           height: 1,
@@ -124,8 +94,6 @@ class _StationMarkerState extends State<StationMarker>
                     ],
                   ),
                 ),
-              ],
-            ),
           ),
         ),
       ),

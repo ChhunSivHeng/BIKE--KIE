@@ -1,6 +1,5 @@
 import '../../model/station.dart';
 
-// Mock data source (raw data only; no logic).
 final List<Station> mockStations = <Station>[
   const Station(
     id: 'toul_kork',
