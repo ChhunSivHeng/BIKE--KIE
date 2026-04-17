@@ -12,7 +12,7 @@ class MapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final stationRepository = context.read<StationRepository>();
     return ChangeNotifierProvider(
-      create: (_) => MapViewModel(stationRepository)..loadStations(),
+      create: (_) => MapViewModel(stationRepository),
       child: const MapContent(),
     );
   }

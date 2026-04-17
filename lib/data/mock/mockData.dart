@@ -12,7 +12,7 @@ class MockData {
       'latitude': 11.5715,
       'longitude': 104.8904,
       'totalSlots': 20,
-      'availableBikes': <int, Bike>{},
+      'availableBikes': [],
     },
     <String, Object>{
       'id': 'olympic',
@@ -20,7 +20,7 @@ class MockData {
       'latitude': 11.5569,
       'longitude': 104.9156,
       'totalSlots': 20,
-      'availableBikes': <int, Bike>{},
+      'availableBikes': [],
     },
     <String, Object>{
       'id': 'orussey',
@@ -28,7 +28,7 @@ class MockData {
       'latitude': 11.5639,
       'longitude': 104.9242,
       'totalSlots': 20,
-      'availableBikes': <int, Bike>{},
+      'availableBikes': [],
     },
   ];
 
@@ -74,7 +74,7 @@ class MockData {
           id: m['id'] as String,
           name: m['name'] as String,
           totalSlots: (m['totalSlots'] as num).toInt(),
-          availableBikes: (m['availableBikes'] as Map<int, Bike>),
+          availableBikes: (m['availableBikes'] as List<Bike>),
           latitude: (m['latitude'] as num).toDouble(),
           longitude: (m['longitude'] as num).toDouble(),
         ),

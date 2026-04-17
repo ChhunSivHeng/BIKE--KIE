@@ -4,7 +4,7 @@ class Station {
   final String id;
   final String name;
   final int totalSlots;
-  final Map<int, Bike> availableBikes;
+  final List<Bike?> availableBikes;
   final double? latitude;
   final double? longitude;
 
