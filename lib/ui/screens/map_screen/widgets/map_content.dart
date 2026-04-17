@@ -9,6 +9,7 @@ import '../../../../ui/widgets/display/search_bar.dart';
 import '../view_model/map_view_model.dart';
 import '../states/station_state.dart';
 import 'station_marker.dart';
+import 'station_details_sheet.dart';
 
 class MapContent extends StatelessWidget {
   const MapContent({super.key});
@@ -44,11 +45,32 @@ class _MapViewState extends State<_MapView> {
             height: 44,
             child: StationMarker(
               availableBikes: s.availableBikes,
-              onTap: () {},
+              onTap: () {
+                _showStationDetails(stations, s);
+              },
             ),
           ),
         )
         .toList(growable: false);
+  }
+
+  void _showStationDetails(List<Station> allStations, Station station) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StationDetailsSheet(
+        initialStation: station,
+        allStations: allStations,
+        onStationChanged: (newStation) {
+          // Center map on new station
+          _mapController.move(
+            LatLng(newStation.latitude!, newStation.longitude!),
+            17,
+          );
+        },
+      ),
+    );
   }
 
   void _showSearchSheet(List<Station> allStations) {
@@ -61,10 +83,7 @@ class _MapViewState extends State<_MapView> {
         showOnlyAvailable: _showOnlyAvailable,
         onStationSelected: (station) {
           Navigator.pop(context);
-          _mapController.move(
-            LatLng(station.latitude!, station.longitude!),
-            17,
-          );
+          _showStationDetails(allStations, station);
         },
       ),
     );
@@ -206,12 +225,12 @@ class _MapViewState extends State<_MapView> {
                 TileLayer(
                   urlTemplate:
                       'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                  subdomains: const ['a', 'b', 'c'],
+                  subdomains: const ['a', 'b', 'c', 'd'],
                   userAgentPackageName: 'com.example.bike_kie',
                   maxZoom: 20,
                 ),
-                MarkerLayer(markers: markers),
-              ],
+                  MarkerLayer(markers: markers),
+                ],
             ),
           ),
 
