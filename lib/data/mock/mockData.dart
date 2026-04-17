@@ -1,3 +1,4 @@
+import '../../model/bike.dart';
 import '../../model/station.dart' as app_model;
 import '../../model/pass.dart' as pass_model;
 
@@ -11,7 +12,7 @@ class MockData {
       'latitude': 11.5715,
       'longitude': 104.8904,
       'totalSlots': 20,
-      'availableBikes': 12,
+      'availableBikes': <int, Bike>{},
     },
     <String, Object>{
       'id': 'olympic',
@@ -19,7 +20,7 @@ class MockData {
       'latitude': 11.5569,
       'longitude': 104.9156,
       'totalSlots': 20,
-      'availableBikes': 3,
+      'availableBikes': <int, Bike>{},
     },
     <String, Object>{
       'id': 'orussey',
@@ -27,7 +28,7 @@ class MockData {
       'latitude': 11.5639,
       'longitude': 104.9242,
       'totalSlots': 20,
-      'availableBikes': 8,
+      'availableBikes': <int, Bike>{},
     },
   ];
 
@@ -73,7 +74,7 @@ class MockData {
           id: m['id'] as String,
           name: m['name'] as String,
           totalSlots: (m['totalSlots'] as num).toInt(),
-          availableBikes: (m['availableBikes'] as num).toInt(),
+          availableBikes: (m['availableBikes'] as Map<int, Bike>),
           latitude: (m['latitude'] as num).toDouble(),
           longitude: (m['longitude'] as num).toDouble(),
         ),

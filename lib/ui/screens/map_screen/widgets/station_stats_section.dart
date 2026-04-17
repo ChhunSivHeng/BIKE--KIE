@@ -22,9 +22,9 @@ class StationStatsSection extends StatelessWidget {
           children: [
             Expanded(
               child: _StatCard(
-                value: '${station.availableBikes}',
+                value: '${station.bikeAmounts}',
                 label: 'Bikes Available',
-                icon: Icons.two_wheeler,
+                icon: Icons.pedal_bike,
                 isWarning: isLowAvailability,
               ),
             ),
@@ -55,7 +55,7 @@ class StationStatsSection extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Only ${station.availableBikes} bike(s) left',
+                      'Only ${station.bikeAmounts} bike${station.bikeAmounts > 1 ? 's' : ''} left',
                       style: TextStyle(
                         color: Colors.orange[700],
                         fontSize: 12,

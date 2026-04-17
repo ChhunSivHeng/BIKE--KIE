@@ -1,8 +1,10 @@
+import 'bike.dart';
+
 class Station {
   final String id;
   final String name;
   final int totalSlots;
-  final int availableBikes;
+  final Map<int, Bike> availableBikes;
   final double? latitude;
   final double? longitude;
 
@@ -15,7 +17,7 @@ class Station {
     this.longitude,
   });
 
-  bool get hasBikes => availableBikes > 0;
+  int get bikeAmounts => availableBikes.length;
 
   @override
   String toString() =>

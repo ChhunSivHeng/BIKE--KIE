@@ -6,8 +6,6 @@ import 'data/repositories/passRepository/pass_repositoryMock.dart';
 import 'data/repositories/passRepository/pass_repository.dart';
 import 'data/repositories/userRepository/user_repositoryMock.dart';
 import 'data/repositories/userRepository/user_repository.dart';
-import 'data/repositories/bikeRepository/bike_repositoryMock.dart';
-import 'data/repositories/bikeRepository/bike_repository.dart';
 import 'main_common.dart';
 
 List<InheritedProvider> get devProviders {
@@ -20,9 +18,6 @@ List<InheritedProvider> get devProviders {
     ),
     Provider<UserRepository>(
       create: (_) => UserRepositoryMock(),
-    ),
-    Provider<BikeRepository>(
-      create: (_) => BikeRepositoryMock(),
     ),
   ];
 }
