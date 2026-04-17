@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../view_model/booking_model.dart';
 import 'booking_snackbars.dart';
 import 'payment_dialog.dart';
+import '../../success_screen/success_screen.dart';
 
 /// Handles user actions in booking screen
 class BookingActions {
@@ -12,11 +13,16 @@ class BookingActions {
     VoidCallback onSuccess,
   ) {
     viewModel.confirmBooking();
-    BookingSnackbars.showBookingSuccess(context);
-    Future.delayed(const Duration(seconds: 2), () {
+    
+    // Navigate to success screen after a short delay
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (context.mounted) {
-        Navigator.pop(context);
-        onSuccess();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SuccessScreen(),
+          ),
+        );
       }
     });
   }
