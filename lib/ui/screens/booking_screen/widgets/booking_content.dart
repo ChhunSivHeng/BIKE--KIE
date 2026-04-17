@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../utils/app_theme.dart';
+import '../../../../utils/animations_util.dart';
 import '../view_model/booking_model.dart';
+import 'booking_appbar.dart';
+import 'booking_body.dart';
+import 'booking_actions.dart';
 
 class BookingContent extends StatefulWidget {
   const BookingContent({super.key});
@@ -10,128 +13,79 @@ class BookingContent extends StatefulWidget {
   State<BookingContent> createState() => _BookingContentState();
 }
 
-class _BookingContentState extends State<BookingContent> {
-  bool _isFavorite = false;
+class _BookingContentState extends State<BookingContent>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAnimation();
+  }
+
+  void _setupAnimation() {
+    _controller = AnimationController(
+      duration: AnimationUtils.normal,
+      vsync: this,
+    );
+    _fadeAnimation = AnimationUtils.createFadeAnimation(_controller);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<BookingViewModel>();
-    final station = vm.station;
-
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Stations Details',
-            style: TextStyle(
-              color: AppColors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
-            ),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(
-                _isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: _isFavorite ? AppColors.primary : AppColors.gray400,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isFavorite = !_isFavorite;
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-      body: station == null
-          ? const Center(child: Text('No station selected'))
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Station Header Section
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Station ID
-                        Text(
-                          'STATION ID: ${station.id}',
-                          style: const TextStyle(
-                            color: AppColors.gray600,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Station Name with Status Badge
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                station.name,
-                                style: const TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            // Status Badge
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: const Text(
-                                'ACTIVE',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        // Location
-                        const Text(
-                          'Phnom Penh',
-                          style: TextStyle(
-                            color: AppColors.gray600,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      appBar: const BookingAppBar(),
+      body: _buildContent(vm),
     );
+  }
+
+  Widget _buildContent(BookingViewModel vm) {
+    final station = vm.station;
+
+    if (station == null) {
+      return const Center(child: Text('No station selected'));
+    }
+
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: BookingBody(
+        station: station,
+        viewModel: vm,
+        onBrowsePasses: _onBrowsePasses,
+        onBuyTicket: _onBuyTicket,
+        onConfirmBooking: _onConfirmBooking,
+      ),
+    );
+  }
+
+  void _refresh() => setState(() {});
+
+  void _onConfirmBooking() {
+    BookingActions.handleConfirmBooking(
+      context,
+      context.read<BookingViewModel>(),
+      _refresh,
+    );
+  }
+
+  void _onBrowsePasses() {
+    BookingActions.handleBrowsePasses(context, _refresh);
+  }
+
+  void _onBuyTicket() {
+    BookingActions.handleBuyTicket(context);
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) _refresh();
+    });
   }
 }

@@ -45,7 +45,7 @@ class MockData {
       'type': 'monthly',
       'price': 29.0,
       'durationDays': 30,
-      'isActive': true,
+      'isActive': false,
     },
     <String, Object>{
       'id': 'pass_annual',
