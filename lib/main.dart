@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'ui/screens/map_screen/map_content.dart';
+import 'ui/screens/map_screen/map_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,7 @@ class BikeKieApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BIKE-KIE',
-      home: MapContent(), // shows the map page on launch
+      home: MapScreen(), // shows the map page on launch
     );
   }
 }

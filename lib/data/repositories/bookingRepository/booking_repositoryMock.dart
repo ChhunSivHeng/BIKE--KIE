@@ -1,4 +1,4 @@
-import '../../model/booking.dart';
+import '../../../model/booking.dart';
 import 'booking_repository.dart';
 
 class BookingRepositoryMock implements BookingRepository {
@@ -14,7 +14,10 @@ class BookingRepositoryMock implements BookingRepository {
   }
 
   @override
-  Future<Booking> createBooking({required String bikeId, required String stationId}) async {
+  Future<Booking> createBooking({
+    required String bikeId,
+    required String stationId,
+  }) async {
     await _simulateNetwork();
     final now = DateTime.now();
     final booking = Booking(

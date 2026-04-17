@@ -1,5 +1,5 @@
-import '../../model/pass.dart';
-import '../../model/user.dart';
+import '../../../model/pass.dart';
+import '../../../model/user.dart';
 import 'user_repository.dart';
 
 class UserRepositoryMock implements UserRepository {

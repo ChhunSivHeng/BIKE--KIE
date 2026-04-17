@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../data/repositories/stationRepository/station_repository.dart';
 import '../../../../data/repositories/stationRepository/station_repositoryMock.dart';
-import 'states/station_state.dart';
+import '../states/station_state.dart';
 
 class MapViewModel extends ChangeNotifier {
   final StationRepository _repo;

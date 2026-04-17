@@ -1,5 +1,5 @@
-import '../../../../domain/models/station.dart';
-export '../../../../domain/models/station.dart';
+import '../../../../model/station.dart';
+export '../../../../model/station.dart';
 
 enum Status { loading, success, error }
 
@@ -15,20 +15,20 @@ class StationState {
   });
 
   factory StationState.loading() => const StationState._(
-        status: Status.loading,
-        stations: <Station>[],
-        error: null,
-      );
+    status: Status.loading,
+    stations: <Station>[],
+    error: null,
+  );
 
   factory StationState.success(List<Station> data) => StationState._(
-        status: Status.success,
-        stations: List<Station>.unmodifiable(data),
-        error: null,
-      );
+    status: Status.success,
+    stations: List<Station>.unmodifiable(data),
+    error: null,
+  );
 
   factory StationState.error(String message) => StationState._(
-        status: Status.error,
-        stations: const <Station>[],
-        error: message,
-      );
+    status: Status.error,
+    stations: const <Station>[],
+    error: message,
+  );
 }

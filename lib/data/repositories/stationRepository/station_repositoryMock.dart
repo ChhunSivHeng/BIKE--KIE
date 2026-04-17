@@ -1,5 +1,5 @@
-import '../../model/station.dart';
-import '../mockData.dart';
+import '../../../model/station.dart';
+import '../../mock/mockData.dart';
 import 'station_repository.dart';
 
 class StationRepositoryMock implements StationRepository {

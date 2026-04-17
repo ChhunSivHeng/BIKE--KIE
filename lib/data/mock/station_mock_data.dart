@@ -1,10 +1,11 @@
-import '../../domain/models/station.dart';
+import '../../model/station.dart';
 
 // Mock data source (raw data only; no logic).
 final List<Station> mockStations = <Station>[
   const Station(
     id: 'toul_kork',
     name: 'Toul Kork',
+    totalSlots: 20,
     latitude: 11.5715,
     longitude: 104.8904,
     availableBikes: 12,
@@ -12,6 +13,7 @@ final List<Station> mockStations = <Station>[
   const Station(
     id: 'olympic',
     name: 'Olympic',
+    totalSlots: 20,
     latitude: 11.5569,
     longitude: 104.9156,
     availableBikes: 3,
@@ -19,6 +21,7 @@ final List<Station> mockStations = <Station>[
   const Station(
     id: 'orussey',
     name: 'Orussey',
+    totalSlots: 20,
     latitude: 11.5639,
     longitude: 104.9242,
     availableBikes: 8,

@@ -1,4 +1,4 @@
-import '../model/station.dart' as app_model;
+import '../../model/station.dart' as app_model;
 
 class MockData {
   const MockData._();
@@ -31,13 +31,15 @@ class MockData {
   ];
 
   static List<Map<String, Object>> get stations => _stationRaw
-      .map((m) => <String, Object>{
-            'id': m['id'] as String,
-            'name': m['name'] as String,
-            'latitude': (m['latitude'] as num).toDouble(),
-            'longitude': (m['longitude'] as num).toDouble(),
-            'availableBikes': (m['availableBikes'] as num).toInt(),
-          })
+      .map(
+        (m) => <String, Object>{
+          'id': m['id'] as String,
+          'name': m['name'] as String,
+          'latitude': (m['latitude'] as num).toDouble(),
+          'longitude': (m['longitude'] as num).toDouble(),
+          'availableBikes': (m['availableBikes'] as num).toInt(),
+        },
+      )
       .toList(growable: false);
 
   static List<app_model.Station> get stationRepositoryStations => _stationRaw
@@ -47,6 +49,8 @@ class MockData {
           name: m['name'] as String,
           totalSlots: (m['totalSlots'] as num).toInt(),
           availableBikes: (m['availableBikes'] as num).toInt(),
+          latitude: (m['latitude'] as num).toDouble(),
+          longitude: (m['longitude'] as num).toDouble(),
         ),
       )
       .toList(growable: false);
