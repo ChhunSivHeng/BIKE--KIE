@@ -71,6 +71,7 @@ class _BookingContentState extends State<BookingContent>
   void _refresh() => setState(() {});
 
   void _onConfirmBooking() {
+    // context.read (W5): One-time access for method calls (no subscription needed)
     BookingActions.handleConfirmBooking(
       context,
       context.read<BookingViewModel>(),

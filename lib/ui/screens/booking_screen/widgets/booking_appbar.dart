@@ -3,7 +3,8 @@ import '../../../../utils/app_theme.dart';
 import 'booking_theme.dart';
 import 'booking_constants.dart';
 
-/// Custom AppBar for booking screen
+/// Custom AppBar for booking screen (MVVM: View)
+/// Pure presentation - navigation only
 class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BookingAppBar({super.key});
 

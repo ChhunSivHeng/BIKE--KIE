@@ -11,7 +11,7 @@ import 'confirm_button.dart';
 import 'booking_theme.dart';
 import 'booking_constants.dart';
 
-/// Main body content for booking screen
+
 class BookingBody extends StatelessWidget {
   final Station station;
   final BookingViewModel viewModel;
@@ -58,6 +58,17 @@ class BookingBody extends StatelessWidget {
   ];
 
   Widget _buildPassSection() {
+    /// 🎯 Conditional Rendering (W4 Observer Pattern)
+    /// UI adapts based on ViewModel state: viewModel.hasActivePass
+    ///
+    /// When state changes (user buys pass):
+    /// 1. ViewModel.buyAndSetPass() updates _user
+    /// 2. Calls notifyListeners()
+    /// 3. BookingContent rebuilds (context.watch)
+    /// 4. _buildPassSection() re-runs
+    /// 5. Shows ActivePassSection instead of NoPassSection
+    ///
+    /// This is pure View logic - no business logic here!
     if (!viewModel.hasActivePass) {
       return const NoPassSection();
     }
@@ -69,6 +80,22 @@ class BookingBody extends StatelessWidget {
   }
 
   Widget _buildActionSection() {
+    /// 🎬 Dynamic UI based on User State (W4, W5)
+    ///
+    /// If HAS active pass → Show ConfirmButton
+    ///   → User taps → calls onConfirmBooking callback
+    ///   → bookingActions.handleConfirmBooking()
+    ///   → ViewModel.confirmBooking() (business logic)
+    ///   → repository.createBooking() (data access)
+    ///   → Updates state + notifyListeners()
+    ///   → Navigation to SuccessScreen
+    ///
+    /// If NO active pass → Show PassSelectionButtons
+    ///   → Browse Passes or Buy Ticket
+    ///   → Each action calls ViewModel methods
+    ///   → State updated, UI re-renders
+    ///
+    /// This demonstrates MVVM: View adapts to ViewModel state!
     return viewModel.hasActivePass
         ? ConfirmButton(onPressed: onConfirmBooking)
         : PassSelectionButtons(
