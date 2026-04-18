@@ -9,7 +9,7 @@ class PassRepositoryMock implements PassRepository {
     _callCount++;
     await Future.delayed(const Duration(seconds: 1));
     if (_callCount % 2 == 0) {
-      throw Exception('Mock API Error');
+      throw Exception('Error');
     }
   }
 
