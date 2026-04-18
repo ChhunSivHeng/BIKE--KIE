@@ -7,7 +7,9 @@ import '../../../../utils/async_value.dart';
 class MapViewModel extends ChangeNotifier {
   final StationRepository _repo;
 
-  MapViewModel(this._repo);
+  MapViewModel(this._repo) {
+    loadStations();
+  }
 
   AsyncValue<List<Station>> _state = AsyncValue<List<Station>>.loading();
   AsyncValue<List<Station>> get data => _state;
@@ -30,24 +32,12 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final rawStations = await _repo.getStations();
-
-      final stations = rawStations
-          .map((s) {
-            final c = _coordsForId(s.id);
-            return Station(
-              id: s.id,
-              name: s.name,
-              totalSlots: s.totalSlots,
-              latitude: c.lat,
-              longitude: c.lng,
-              availableBikes: s.availableBikes,
-            );
-          })
-          .toList(growable: false);
+      print('object');
+      final stations = await _repo.getStations();
 
       _state = AsyncValue<List<Station>>.success(stations);
-    } catch (_) {
+    } catch (e) {
+      print(e);
       _state = AsyncValue.error('Failed to load stations.');
     }
     notifyListeners();

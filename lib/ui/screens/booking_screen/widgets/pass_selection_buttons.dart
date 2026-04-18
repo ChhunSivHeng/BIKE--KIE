@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 import '../view_model/booking_model.dart';
 
-/// Pass selection buttons for booking without active pass
 class PassSelectionButtons extends StatelessWidget {
   final BookingViewModel viewModel;
   final VoidCallback onBrowsePasses;

@@ -3,7 +3,8 @@ import 'booking_theme.dart';
 import 'booking_constants.dart';
 import 'pass_info_card.dart';
 
-/// Shows active pass details
+/// Shows active pass details (MVVM: View displays ViewModel state)
+/// Data passed as params (not from watch - local props only)
 class ActivePassSection extends StatelessWidget {
   final String passTypeName;
   final String validUntil;

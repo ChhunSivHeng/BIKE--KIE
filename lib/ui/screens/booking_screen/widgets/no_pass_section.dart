@@ -3,7 +3,6 @@ import 'booking_theme.dart';
 import 'booking_constants.dart';
 import 'warning_alert.dart';
 
-/// Shows warning when user has no active pass
 class NoPassSection extends StatelessWidget {
   const NoPassSection({super.key});
 

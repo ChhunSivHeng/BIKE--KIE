@@ -8,7 +8,7 @@ final List<Station> mockStations = <Station>[
     totalSlots: 20,
     latitude: 11.5715,
     longitude: 104.8904,
-    availableBikes: <int, Bike>{},
+    availableBikes: [],
   ),
   const Station(
     id: 'olympic',
@@ -16,7 +16,7 @@ final List<Station> mockStations = <Station>[
     totalSlots: 20,
     latitude: 11.5569,
     longitude: 104.9156,
-    availableBikes: <int, Bike>{},
+    availableBikes: [],
   ),
   const Station(
     id: 'orussey',
@@ -24,6 +24,6 @@ final List<Station> mockStations = <Station>[
     totalSlots: 20,
     latitude: 11.5639,
     longitude: 104.9242,
-    availableBikes: <int, Bike>{},
+    availableBikes: [],
   ),
 ];
