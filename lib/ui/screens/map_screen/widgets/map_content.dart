@@ -5,7 +5,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:provider/provider.dart';
 
-import '../../../../ui/widgets/navigation/app_header.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
 import '../../../../utils/async_value.dart';
 import '../view_model/map_view_model.dart';
@@ -47,6 +46,7 @@ class _MapViewState extends State<_MapView> {
             child: StationMarker(
               availableBikes: s.bikeAmounts,
               onTap: () {
+                _mapController.move(LatLng(s.latitude!, s.longitude!), 17);
                 _showStationDetails(stations, s);
               },
             ),
@@ -90,7 +90,7 @@ class _MapViewState extends State<_MapView> {
     );
   }
 
-  void _showFilterDialog() {
+  void _showFilterDialog(MapViewModel vm) {
     showDialog(
       context: context,
       builder: (context) => FilterDialog(
@@ -101,6 +101,12 @@ class _MapViewState extends State<_MapView> {
             _minBikes = minBikes;
             _showOnlyAvailable = showOnlyAvailable;
           });
+          () async {
+            await vm.loadStations(
+              minBike: _minBikes,
+              onlyShowAvailableBike: _showOnlyAvailable,
+            );
+          }();
           Navigator.pop(context);
         },
       ),
@@ -172,7 +178,9 @@ class _MapViewState extends State<_MapView> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  data.error.toString().isEmpty ? 'Something went wrong.' : data.error.toString(),
+                  data.error.toString().isEmpty
+                      ? 'Something went wrong.'
+                      : data.error.toString(),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.gray700,
@@ -230,8 +238,8 @@ class _MapViewState extends State<_MapView> {
                   userAgentPackageName: 'com.example.bike_kie',
                   maxZoom: 20,
                 ),
-                  MarkerLayer(markers: markers),
-                ],
+                MarkerLayer(markers: markers),
+              ],
             ),
           ),
 
@@ -252,11 +260,10 @@ class _MapViewState extends State<_MapView> {
               ),
               child: AppSearchBar(
                 onTap: () => _showSearchSheet(data.data!),
-                onFilterTap: _showFilterDialog,
+                onFilterTap: () => _showFilterDialog(vm),
               ),
             ),
           ),
-
         ],
       ),
     );
