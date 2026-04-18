@@ -4,6 +4,12 @@ import '../../../../model/pass.dart';
 import '../../../../utils/app_theme.dart';
 
 class PassCard extends StatelessWidget {
+
+  final Pass pass;
+  final bool isSelected;
+  final bool isCurrent;
+  final VoidCallback onTap;
+
   const PassCard({
     super.key,
     required this.pass,
@@ -11,11 +17,6 @@ class PassCard extends StatelessWidget {
     required this.isCurrent,
     required this.onTap,
   });
-
-  final Pass pass;
-  final bool isSelected;
-  final bool isCurrent;
-  final VoidCallback onTap;
 
   String get _name {
     switch (pass.type) {
@@ -61,17 +62,6 @@ class PassCard extends StatelessWidget {
     }
   }
 
-  String get _badge {
-    switch (pass.type) {
-      case PassType.day:
-        return '';
-      case PassType.monthly:
-        return 'MOST POPULAR';
-      case PassType.annual:
-        return 'BEST VALUE';
-    }
-  }
-
   int get _durationDays => pass.endDate.difference(pass.startDate).inDays;
 
   String get _durationLabel {
@@ -111,128 +101,92 @@ class PassCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,
-          child: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  14,
-                  _badge.isNotEmpty ? 30 : 14,
-                  14,
-                  12,
-                ),
-                child: Column(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _name,
+                            style: const TextStyle(
+                              color: AppColors.black,
+                              fontSize: 28 / 2,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _subtitle,
+                            style: const TextStyle(
+                              color: AppColors.gray600,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _name,
-                                style: const TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 28 / 2,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _subtitle,
-                                style: const TextStyle(
-                                  color: AppColors.gray600,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
+                        Text(
+                          '\$${pass.price.toStringAsFixed(pass.price.truncateToDouble() == pass.price ? 0 : 2)}',
+                          style: const TextStyle(
+                            color: AppColors.black,
+                            fontSize: 32 / 2,
+                            fontWeight: FontWeight.w700,
+                            height: 1,
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '\$${pass.price.toStringAsFixed(pass.price.truncateToDouble() == pass.price ? 0 : 2)}',
-                              style: const TextStyle(
-                                color: AppColors.black,
-                                fontSize: 32 / 2,
-                                fontWeight: FontWeight.w700,
-                                height: 1,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _durationLabel.toUpperCase(),
-                              style: const TextStyle(
-                                color: AppColors.gray500,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(height: 2),
+                        Text(
+                          _durationLabel.toUpperCase(),
+                          style: const TextStyle(
+                            color: AppColors.gray500,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    for (final benefit in _benefits)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.check,
-                              size: 14,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                benefit,
-                                style: const TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    const SizedBox(height: 8),
                   ],
                 ),
-              ),
-              if (_badge.isNotEmpty)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(11),
-                        bottomLeft: Radius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      _badge,
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.4,
-                      ),
+                const SizedBox(height: 10),
+                for (final benefit in _benefits)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            benefit,
+                            style: const TextStyle(
+                              color: AppColors.black,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-            ],
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
         ),
       ),

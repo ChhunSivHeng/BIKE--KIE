@@ -20,7 +20,4 @@ class Pass {
     required this.endDate,
     required this.isActive,
   });
-
-  @override
-  String toString() => 'Pass(id: $id, type: $type, price: $price, isActive: $isActive)';
 }
