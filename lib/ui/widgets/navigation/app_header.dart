@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../utils/app_theme.dart';
 
 class AppHeader extends StatelessWidget {
-  const AppHeader({super.key, this.onMenuTap, this.title = 'BIKE-KIE'});
+  const AppHeader({super.key, this.title = 'BIKE-KIE'});
 
-  final VoidCallback? onMenuTap;
   final String title;
 
   static const double height = 56;
@@ -17,11 +16,6 @@ class AppHeader extends StatelessWidget {
         height: height,
         child: Row(
           children: [
-            IconButton(
-              onPressed: onMenuTap,
-              icon: const Icon(Icons.menu, color: AppColors.black),
-              tooltip: 'Menu',
-            ),
             Expanded(
               child: Center(
                 child: Text(

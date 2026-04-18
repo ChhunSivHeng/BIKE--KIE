@@ -236,14 +236,7 @@ class _MapViewState extends State<_MapView> {
           ),
 
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: AppHeader(onMenuTap: () {}),
-          ),
-
-          Positioned(
-            top: AppHeader.height + 10,
+            top: 16,
             left: 12,
             right: 12,
             child: Container(

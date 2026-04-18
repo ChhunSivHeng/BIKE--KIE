@@ -63,12 +63,8 @@ class _StationMarkerState extends State<StationMarker>
                       end: Alignment.bottomRight,
                       colors: [AppColors.gray300, AppColors.gray100],
                     ),
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(AppRadius.lg),
-                topRight: const Radius.circular(AppRadius.lg),
-                bottomLeft: const Radius.circular(AppRadius.lg),
-                bottomRight: const Radius.circular(2),
-              ),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(color: AppColors.black),
               boxShadow: hasBikes ? AppShadows.redGlow : AppShadows.md,
             ),
             child: Padding(
