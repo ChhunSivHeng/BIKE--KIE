@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../model/pass.dart';
 import '../../../../utils/app_theme.dart';
@@ -12,14 +11,19 @@ import 'pass_section_header.dart';
 import 'pass_status_card.dart';
 
 class PassContent extends StatelessWidget {
-  const PassContent({super.key});
+  final PassViewModel viewModel;
+
+  const PassContent({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.gray50,
-      body: Consumer<PassViewModel>(
-        builder: (context, vm, _) {
+      body: AnimatedBuilder(
+        animation: viewModel,
+        builder: (context, _) {
+          final vm = viewModel;
+
           if (vm.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
