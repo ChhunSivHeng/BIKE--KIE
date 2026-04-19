@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_model/booking_model.dart';
+import '../widgets/payment_dialog.dart';
 import 'booking_snackbars.dart';
-import 'payment_dialog.dart';
 import '../../success_screen/success_screen.dart';
 
 class BookingActions {
@@ -11,7 +11,6 @@ class BookingActions {
     BookingViewModel viewModel,
     VoidCallback onSuccess,
   ) {
-
     viewModel.confirmBooking();
 
     // Navigate after action completes (Async W9 pattern)
@@ -26,7 +25,6 @@ class BookingActions {
   }
 
   static void handleBrowsePasses(BuildContext context, VoidCallback onReturn) {
-
     Navigator.pushNamed(context, '/passes').then((_) => onReturn());
   }
 

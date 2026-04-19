@@ -1,4 +1,3 @@
-import '../../model/bike.dart';
 import '../../model/station.dart';
 
 final List<Station> mockStations = <Station>[
