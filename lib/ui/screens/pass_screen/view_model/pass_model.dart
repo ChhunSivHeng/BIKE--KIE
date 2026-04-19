@@ -1,9 +1,16 @@
 import 'package:flutter/foundation.dart';
 
 import '../../../../data/repositories/passRepository/pass_repository.dart';
-import '../../../../data/repositories/passRepository/pass_repositoryMock.dart';
 import '../../../../model/pass.dart';
 
+/// ViewModel for Pass Screen
+///
+/// Manages:
+/// - Loading all available passes from PassRepository (Firebase)
+/// - Pass selection
+/// - Pass purchase simulation
+///
+/// Requires PassRepository to be injected via dependency injection.
 class PassViewModel extends ChangeNotifier {
   final PassRepository _repo;
 
@@ -13,7 +20,8 @@ class PassViewModel extends ChangeNotifier {
   Pass? selectedPass;
   String? error;
 
-  PassViewModel({PassRepository? repo}) : _repo = repo ?? PassRepositoryMock();
+  PassViewModel({required PassRepository passRepository})
+    : _repo = passRepository;
 
   void _notify() {
     notifyListeners();

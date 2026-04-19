@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
 
-/// Reusable warning alert component
-class WarningAlert extends StatelessWidget {
+class AlertCard extends StatelessWidget {
   final String title;
   final String message;
   final Color backgroundColor;
   final Color borderColor;
   final Color textColor;
+  final IconData icon;
+  final EdgeInsetsGeometry padding;
+  final double borderRadius;
 
-  const WarningAlert({
+  const AlertCard({
     super.key,
     required this.title,
     required this.message,
     required this.backgroundColor,
     required this.borderColor,
     required this.textColor,
+    this.icon = Icons.info_outline,
+    this.padding = const EdgeInsets.all(12),
+    this.borderRadius = 12,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: padding,
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: textColor, size: 24),
+          Icon(icon, color: textColor, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

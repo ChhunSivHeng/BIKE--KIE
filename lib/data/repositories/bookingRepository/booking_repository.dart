@@ -1,31 +1,30 @@
 import '../../../model/booking.dart';
 
-/// 🏗️ REPOSITORY PATTERN (W5: DI & Abstraction)
+/// Abstract interface for booking data access
 ///
-/// This is the ABSTRACT interface. Why?
+/// Allows:
+/// - Swapping implementations (Firebase, Firestore, REST)
+/// - Decoupling business logic from data source
+/// - Easy testing through dependency injection
 ///
-/// 1️⃣ SEPARATION OF CONCERNS
-/// - ViewModel doesn't know if data comes from API, Firebase, mock, etc.
-/// - Easy to swap implementations without changing ViewModel
+/// Implementation: BookingRepositoryFirebase (Firebase Realtime Database)
 ///
-/// 2️⃣ TESTABILITY
-/// - Create MockBookingRepository for testing
-/// - Inject mock in tests, real in production
-///
-/// 3️⃣ DEPENDENCY INJECTION
-/// - main_dev.dart provides concrete implementation
-/// - ViewModel receives it via constructor or context.read<>
-///
-/// IMPLEMENTATION OPTIONS:
-/// - BookingRepositoryMock (in dev)
-/// - BookingRepositoryFirebase (if using Firebase)
-/// - BookingRepositoryRest (if using REST API)
-/// All implement this abstract interface!
+/// Provided by: main_dev.dart via Provider<BookingRepository>
 abstract class BookingRepository {
+  /// Create a new booking record in Firebase
+  ///
+  /// Endpoint: POST /bookings.json
+  /// Returns: Booking object with generated ID from Firebase
+  /// Throws: Exception if Firebase request fails
   Future<Booking> createBooking({
     required String bikeId,
     required String stationId,
   });
 
+  /// Fetch all bookings from Firebase
+  ///
+  /// Endpoint: GET /bookings.json
+  /// Returns: List of all booking records
+  /// Returns: Empty list if no bookings exist
   Future<List<Booking>> getBookings();
 }
