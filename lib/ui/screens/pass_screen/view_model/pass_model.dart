@@ -4,30 +4,66 @@ import '../../../../data/repositories/passRepository/pass_repository.dart';
 import '../../../../data/repositories/userRepository/user_repository.dart';
 import '../../../../model/pass.dart';
 import '../../../../model/user.dart';
+import '../../../../utils/async_value.dart';
 
-/// ViewModel for Pass Screen
-///
-/// Manages:
-/// - Loading all available passes from PassRepository (Firebase)
-/// - Pass selection and purchase with Firebase persistence
-/// - User pass state updates via UserRepository
-///
-/// Requires PassRepository and UserRepository to be injected via dependency injection.
+class PassesData {
+  final User user;
+  final List<Pass> passes;
+  final Pass? activePass;
+  final String? selectedPassId;
+  final String? purchasingPassId;
+
+  const PassesData({
+    required this.user,
+    required this.passes,
+    required this.activePass,
+    this.selectedPassId,
+    this.purchasingPassId,
+  });
+
+  Pass? get selectedPass {
+    final id = selectedPassId;
+    if (id == null) return null;
+    for (final pass in passes) {
+      if (pass.id == id) return pass;
+    }
+    return null;
+  }
+
+  PassesData copyWith({
+    User? user,
+    List<Pass>? passes,
+    Pass? activePass,
+    String? selectedPassId,
+    String? purchasingPassId,
+  }) {
+    return PassesData(
+      user: user ?? this.user,
+      passes: passes ?? this.passes,
+      activePass: activePass ?? this.activePass,
+      selectedPassId: selectedPassId,
+      purchasingPassId: purchasingPassId,
+    );
+  }
+}
 class PassViewModel extends ChangeNotifier {
   final PassRepository _passRepository;
   final UserRepository _userRepository;
 
-  bool isLoading = false;
-  bool isProcessingPayment = false;
-  List<Pass> passes = [];
-  Pass? selectedPass;
-  String? error;
-  User? purchasedUserState;
-  User? _currentUser;
+  AsyncValue<PassesData> _state = AsyncValue<PassesData>.loading();
+  AsyncValue<PassesData> get state => _state;
 
-  User? get currentUser => _currentUser;
-  bool get hasCurrentPass => _currentUser?.activePass != null;
-  Pass? get currentPass => _currentUser?.activePass;
+  PassesData? get _data => _state.data;
+  User? get currentUser => _data?.user;
+  Pass? get currentPass => _data?.activePass;
+  bool get hasCurrentPass => currentPass != null;
+  List<Pass> get passes => _data?.passes ?? const [];
+  Pass? get selectedPass => _data?.selectedPass;
+  bool get isLoading => _state.state == AsyncValueState.loading;
+  bool get isProcessingPayment => _data?.purchasingPassId != null;
+  String? get error =>
+      _state.state == AsyncValueState.error ? _state.error.toString() : null;
+  User? get purchasedUserState => _data?.user;
 
   PassViewModel({
     required PassRepository passRepository,
@@ -35,95 +71,66 @@ class PassViewModel extends ChangeNotifier {
   }) : _passRepository = passRepository,
        _userRepository = userRepository;
 
-  void _notify() {
+  Future<void> loadPasses() async {
+    _state = AsyncValue<PassesData>.loading();
+    notifyListeners();
+
+    try {
+      final rawPasses = await _passRepository.getPasses();
+      final user = await _userRepository.getCurrentUser();
+      _state = AsyncValue<PassesData>.success(
+        PassesData(user: user, passes: rawPasses, activePass: user.activePass),
+      );
+    } catch (e) {
+      _state = AsyncValue<PassesData>.error('Failed to load passes: $e');
+    }
     notifyListeners();
   }
 
-  /// Load available passes and user's current pass status
-  Future<void> loadPasses() async {
-    isLoading = true;
-    error = null;
-    _notify();
-
-    try {
-      // Load both available passes and user's current pass
-      final rawPasses = await _passRepository.getPasses();
-      final user = await _userRepository.getCurrentUser();
-
-      _currentUser = user;
-      passes = rawPasses;
-      selectedPass = null;
-    } catch (e) {
-      error = 'Failed to load passes: $e';
-      debugPrint('Error loading passes: $e');
-    }
-
-    isLoading = false;
-    _notify();
-  }
-
-  /// Select a pass for purchase
   void selectPass(Pass selected) {
-    if (isLoading || error != null) {
-      return;
-    }
-
-    selectedPass = selected;
-    _notify();
+    final data = _data;
+    if (data == null || data.activePass != null || data.purchasingPassId != null) return;
+    _state = AsyncValue<PassesData>.success(
+      data.copyWith(selectedPassId: selected.id, purchasingPassId: null),
+    );
+    notifyListeners();
   }
 
-  /// Process payment and save pass to Firebase
-  ///
-  /// Flow:
-  /// 1. Validate payment state
-  /// 2. Create pass copy with startDate set to today
-  /// 3. Call UserRepository.setActivePass() to persist in Firebase
-  /// 4. Update purchasedUserState with new user data
-  /// 5. Return true on success (so caller can navigate back)
-  ///
-  /// Returns: true if purchase successful, false otherwise
-  Future<bool> processPayment() async {
-    if (isLoading || selectedPass == null || isProcessingPayment) {
-      return false;
-    }
+  Future<bool> processPayment() => purchasePass();
 
-    final selected = selectedPass!;
-    isProcessingPayment = true;
-    _notify();
+  Future<bool> purchasePass() async {
+    final data = _data;
+    final selected = data?.selectedPass;
+    if (data == null || selected == null || data.purchasingPassId != null) return false;
+
+    _state = AsyncValue<PassesData>.success(data.copyWith(purchasingPassId: selected.id));
+    notifyListeners();
 
     try {
-      // Simulate payment processing (could be replaced with real payment service)
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Set pass as active and persist to Firebase
       final updatedUser = await _userRepository.setActivePass(selected);
-      purchasedUserState = updatedUser;
-
-      // Update passes list to show purchased pass as active
-      passes = passes
-          .map(
-            (p) => Pass(
-              id: p.id,
-              type: p.type,
-              price: p.price,
-              startDate: p.startDate,
-              endDate: p.endDate,
-              isActive: p.id == selected.id,
-            ),
-          )
+      final nextPasses = data.passes
+          .map((p) => Pass(
+                id: p.id,
+                type: p.type,
+                price: p.price,
+                startDate: p.startDate,
+                endDate: p.endDate,
+                isActive: p.id == selected.id,
+              ))
           .toList(growable: false);
-
-      selectedPass = passes.firstWhere((p) => p.isActive);
-      error = null;
-      isProcessingPayment = false;
-      _notify();
-
+      _state = AsyncValue<PassesData>.success(
+        PassesData(
+          user: updatedUser,
+          passes: nextPasses,
+          activePass: updatedUser.activePass,
+          selectedPassId: selected.id,
+        ),
+      );
+      notifyListeners();
       return true;
     } catch (e) {
-      error = 'Payment failed: $e';
-      debugPrint('Error processing payment: $e');
-      isProcessingPayment = false;
-      _notify();
+      _state = AsyncValue<PassesData>.error('Payment failed: $e');
+      notifyListeners();
       return false;
     }
   }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-import '../../../../model/station.dart';
-import '../../../../utils/app_theme.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../model/station.dart';
+import '../../../../utils/app_theme.dart';
 import '../../../../ui/widgets/display/search_bar.dart';
 import '../../../../utils/async_value.dart';
 import '../view_model/map_view_model.dart';
