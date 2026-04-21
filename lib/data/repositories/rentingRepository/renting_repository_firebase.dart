@@ -2,34 +2,34 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../dtos/booking_dto.dart';
+import '../../dtos/renting_dto.dart';
 import '../../firebase/firebase_database.dart';
-import '../../../model/booking.dart';
-import 'booking_repository.dart';
+import '../../../model/renting.dart';
+import 'renting_repository.dart';
 
 /// Firebase implementation of BookingRepository.
 ///
 /// This repository uses Firebase Realtime Database REST endpoints
 /// and keeps repository details separate from the view model.
-class BookingRepositoryFirebase implements BookingRepository {
+class RentingRepositoryFirebase implements RentingRepository {
   @override
-  Future<Booking> createBooking({
+  Future<Renting> createRenting({
     required String bikeId,
     required String stationId,
   }) async {
-    final booking = Booking(
+    final renting = Renting(
       id: '',
       bikeId: bikeId,
       stationId: stationId,
-      bookingTime: DateTime.now(),
+      rentingTime: DateTime.now(),
       expiryTime: DateTime.now().add(const Duration(minutes: 15)),
       isActive: true,
     );
-
     final uri = FirebaseConfig.baseUri.replace(path: '/bookings.json');
+    print("WOW: ${json.encode(RentingDto.toJson(renting))}");
     final response = await http.post(
       uri,
-      body: json.encode(BookingDto.toJson(booking)),
+      body: json.encode(RentingDto.toJson(renting)),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -39,13 +39,13 @@ class BookingRepositoryFirebase implements BookingRepository {
       if (id == null) {
         throw Exception('Firebase did not return booking id');
       }
-      return Booking(
+      return Renting(
         id: id,
-        bikeId: booking.bikeId,
-        stationId: booking.stationId,
-        bookingTime: booking.bookingTime,
-        expiryTime: booking.expiryTime,
-        isActive: booking.isActive,
+        bikeId: renting.bikeId,
+        stationId: renting.stationId,
+        rentingTime: renting.rentingTime,
+        expiryTime: renting.expiryTime,
+        isActive: renting.isActive,
       );
     }
 
@@ -53,7 +53,7 @@ class BookingRepositoryFirebase implements BookingRepository {
   }
 
   @override
-  Future<List<Booking>> getBookings() async {
+  Future<List<Renting>> getRentings() async {
     final uri = FirebaseConfig.baseUri.replace(path: '/bookings.json');
     final response = await http.get(uri);
 
@@ -69,7 +69,7 @@ class BookingRepositoryFirebase implements BookingRepository {
 
     return body.entries
         .map(
-          (entry) => BookingDto.fromJson(
+          (entry) => RentingDto.fromJson(
             entry.key,
             entry.value as Map<String, dynamic>,
           ),

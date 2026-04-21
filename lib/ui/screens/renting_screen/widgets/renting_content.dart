@@ -7,8 +7,8 @@ import '../../../widgets/booking_header.dart';
 import '../../../widgets/map_preview.dart';
 import '../../../widgets/pass_info_card.dart';
 import '../../../widgets/station_info_card.dart';
-import '../state/booking_content_state.dart';
-import '../view_model/booking_model.dart';
+import '../state/renting_content_state.dart';
+import '../view_model/renting_model.dart';
 
 /// Booking screen text constants
 class _BookingTexts {
@@ -32,14 +32,14 @@ class _BookingTexts {
 /// - Watches BookingViewModel for user state changes
 /// - Uses BookingContentStateMixin for animation & action handlers
 /// - Responds to user interactions (confirm, browse, buy ticket)
-class BookingContent extends StatefulWidget {
-  const BookingContent({super.key});
+class RentingContent extends StatefulWidget {
+  const RentingContent({super.key});
 
   @override
-  State<BookingContent> createState() => _BookingContentState();
+  State<RentingContent> createState() => _RentingContentState();
 }
 
-class _BookingContentState extends State<BookingContent>
+class _RentingContentState extends State<RentingContent>
     with SingleTickerProviderStateMixin, BookingContentStateMixin {
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _BookingContentState extends State<BookingContent>
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<BookingViewModel>();
+    final vm = context.watch<RentingViewModel>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -74,7 +74,7 @@ class _BookingContentState extends State<BookingContent>
     );
   }
 
-  Widget _buildContent(BookingViewModel vm, ThemeData theme) {
+  Widget _buildContent(RentingViewModel vm, ThemeData theme) {
     final station = vm.station;
 
     if (station == null) {
@@ -121,7 +121,7 @@ class _BookingContentState extends State<BookingContent>
     );
   }
 
-  Widget _buildPassSection(BookingViewModel vm) {
+  Widget _buildPassSection(RentingViewModel vm) {
     if (!vm.hasActivePass) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -165,7 +165,7 @@ class _BookingContentState extends State<BookingContent>
     );
   }
 
-  Widget _buildActionSection(BookingViewModel vm) {
+  Widget _buildActionSection(RentingViewModel vm) {
     return vm.hasActivePass
         ? _buildConfirmButton()
         : _buildPassSelectionButtons();

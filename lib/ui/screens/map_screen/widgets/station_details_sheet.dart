@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/station.dart';
-import '../../booking_screen/booking_screen.dart';
+import '../../renting_screen/renting_screen.dart';
 import '../view_model/station_details_model.dart';
 import 'available_bikes_section.dart';
 import 'booking_action_button.dart';
@@ -51,7 +51,7 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BookingScreen(station: _viewModel.currentStation),
+        builder: (context) => RentingScreen(station: _viewModel.currentStation),
       ),
     );
   }

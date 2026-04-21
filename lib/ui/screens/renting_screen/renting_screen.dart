@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/repositories/bookingRepository/booking_repository.dart';
+import '../../../data/repositories/rentingRepository/renting_repository.dart';
 import '../../../data/repositories/userRepository/user_repository.dart';
 import '../../../data/repositories/passRepository/pass_repository.dart';
 import '../../../model/station.dart';
-import 'view_model/booking_model.dart';
-import 'widgets/booking_content.dart';
+import 'view_model/renting_model.dart';
+import 'widgets/renting_content.dart';
 
 /// Booking screen entry point
 ///
@@ -20,21 +20,21 @@ import 'widgets/booking_content.dart';
 /// - BookingRepository, UserRepository, PassRepository come from global Provider (main_dev.dart)
 /// - Station comes from route navigation
 /// - BookingViewModel loads current user from Firebase on initialization
-class BookingScreen extends StatelessWidget {
+class RentingScreen extends StatelessWidget {
   final Station? station;
 
-  const BookingScreen({super.key, this.station});
+  const RentingScreen({super.key, this.station});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => BookingViewModel(
+      create: (context) => RentingViewModel(
         station: station,
-        bookingRepository: context.read<BookingRepository>(),
+        bookingRepository: context.read<RentingRepository>(),
         userRepository: context.read<UserRepository>(),
         passRepository: context.read<PassRepository>(),
       ),
-      child: const BookingContent(),
+      child: const RentingContent(),
     );
   }
 }

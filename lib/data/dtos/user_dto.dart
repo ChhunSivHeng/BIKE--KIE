@@ -11,9 +11,10 @@ class UserDto {
 
   /// Create UserDto from JSON (Firebase response)
   factory UserDto.fromJson(Map<String, dynamic> json) {
+    print('object');
     return UserDto(
       id: json['id'] as String? ?? '',
-      activePass: json['activePass'] != null
+      activePass: json['activePass'] != null && json['activePass'] != ''
           ? PassDto.fromJson(json['activePass'] as Map<String, dynamic>)
           : null,
     );

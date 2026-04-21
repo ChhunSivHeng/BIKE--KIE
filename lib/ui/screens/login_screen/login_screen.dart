@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../services/auth_service.dart';
+import 'view_model/login_view_model.dart';
 import 'widgets/login_form.dart';
 
 /// LoginScreen
@@ -25,10 +26,17 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: LoginForm(authService: context.read<AuthService>()),
+    return ChangeNotifierProvider<LoginViewModel>(
+      create: (context) =>
+          LoginViewModel(authService: context.read<AuthService>()),
+      builder: (context, child) => Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: LoginForm(
+            viewModel: context.read<LoginViewModel>(),
+            authService: context.read<AuthService>(),
+          ),
+        ),
       ),
     );
   }

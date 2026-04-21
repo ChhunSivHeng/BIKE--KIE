@@ -1,4 +1,4 @@
-import '../../../model/booking.dart';
+import '../../../model/renting.dart';
 
 /// Abstract interface for booking data access
 ///
@@ -10,13 +10,13 @@ import '../../../model/booking.dart';
 /// Implementation: BookingRepositoryFirebase (Firebase Realtime Database)
 ///
 /// Provided by: main_dev.dart via Provider<BookingRepository>
-abstract class BookingRepository {
+abstract class RentingRepository {
   /// Create a new booking record in Firebase
   ///
   /// Endpoint: POST /bookings.json
   /// Returns: Booking object with generated ID from Firebase
   /// Throws: Exception if Firebase request fails
-  Future<Booking> createBooking({
+  Future<Renting> createRenting({
     required String bikeId,
     required String stationId,
   });
@@ -26,5 +26,5 @@ abstract class BookingRepository {
   /// Endpoint: GET /bookings.json
   /// Returns: List of all booking records
   /// Returns: Empty list if no bookings exist
-  Future<List<Booking>> getBookings();
+  Future<List<Renting>> getRentings();
 }

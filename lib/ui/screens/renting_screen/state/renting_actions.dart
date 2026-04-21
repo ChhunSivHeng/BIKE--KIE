@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/user.dart';
-import '../view_model/booking_model.dart';
+import '../../pass_screen/pass_screen.dart';
+import '../view_model/renting_model.dart';
 import '../widgets/payment_dialog.dart';
 import '../../success_screen/success_screen.dart';
 
@@ -11,19 +12,19 @@ import '../../success_screen/success_screen.dart';
 /// - Confirm booking: Firebase call → navigate to success
 /// - Browse passes: Navigate to passes screen
 /// - Buy ticket: Show payment dialog → create ticket in Firebase
-class BookingActions {
+class RentingActions {
   /// Confirm booking with Firebase
   ///
   /// Flow:
   /// 1. Call viewModel.confirmBooking() (awaits Firebase)
   /// 2. Call onSuccess() callback for UI update
   /// 3. Navigate to SuccessScreen
-  static Future<void> handleConfirmBooking(
+  static Future<void> handleConfirmRenting(
     BuildContext context,
-    BookingViewModel viewModel,
+    RentingViewModel viewModel,
     VoidCallback onSuccess,
   ) async {
-    await viewModel.confirmBooking();
+    await viewModel.confirmRenting();
     onSuccess();
 
     if (!context.mounted) return;
@@ -40,10 +41,15 @@ class BookingActions {
   /// and updates the BookingViewModel to show the confirm booking screen
   static void handleBrowsePasses(
     BuildContext context,
-    BookingViewModel viewModel,
+    RentingViewModel viewModel,
     VoidCallback onReturn,
   ) {
-    Navigator.pushNamed(context, '/passes').then((result) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(appBar: AppBar(), body: PassScreen()),
+      ),
+    ).then((result) {
       // If user purchased a pass, result will be the updated User
       if (result is User && context.mounted) {
         viewModel.updateUserWithPass(result);
@@ -61,7 +67,7 @@ class BookingActions {
   /// 4. Dialog closes automatically on success
   /// 5. BookingViewModel state is automatically updated with new ticket pass
   static void handleBuyTicket(BuildContext context, VoidCallback onSuccess) {
-    final viewModel = context.read<BookingViewModel>();
+    final viewModel = context.read<RentingViewModel>();
     showDialog(
       context: context,
       builder: (dialogContext) => PaymentDialog(

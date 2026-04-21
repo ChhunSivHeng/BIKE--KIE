@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../model/pass.dart';
 import '../../../../model/station.dart';
 import '../../../../model/user.dart';
-import '../../../../data/repositories/bookingRepository/booking_repository.dart';
+import '../../../../data/repositories/rentingRepository/renting_repository.dart';
 import '../../../../data/repositories/userRepository/user_repository.dart';
 import '../../../../data/repositories/passRepository/pass_repository.dart';
 
@@ -24,9 +24,9 @@ import '../../../../data/repositories/passRepository/pass_repository.dart';
 /// 1. Confirm booking: confirmBooking() → BookingRepository.createBooking() → Firebase
 /// 2. Buy pass: buyAndSetPass() → UserRepository.setActivePass() → Firebase
 /// 3. Buy ticket: buySingleTicket() → PassRepository.createTicket() → UserRepository.setActivePass()
-class BookingViewModel extends ChangeNotifier {
+class RentingViewModel extends ChangeNotifier {
   final Station? _station;
-  final BookingRepository _bookingRepository;
+  final RentingRepository _bookingRepository;
   final UserRepository _userRepository;
   final PassRepository _passRepository;
 
@@ -34,9 +34,9 @@ class BookingViewModel extends ChangeNotifier {
   bool _isLoadingUser = true;
   String? _error;
 
-  BookingViewModel({
+  RentingViewModel({
     Station? station,
-    required BookingRepository bookingRepository,
+    required RentingRepository bookingRepository,
     required UserRepository userRepository,
     required PassRepository passRepository,
   }) : _station = station,
@@ -48,6 +48,7 @@ class BookingViewModel extends ChangeNotifier {
 
   Station? get station => _station;
   User get user => _user;
+
   bool get isLoadingUser => _isLoadingUser;
   String? get error => _error;
 
@@ -90,7 +91,7 @@ class BookingViewModel extends ChangeNotifier {
   /// 2. Find first available bike at station
   /// 3. Call repository.createBooking() to save to Firebase /bookings.json
   /// 4. Returns when Firebase confirms booking creation
-  Future<void> confirmBooking() async {
+  Future<void> confirmRenting() async {
     if (_station == null) {
       throw Exception('No station selected for booking');
     }
@@ -103,7 +104,7 @@ class BookingViewModel extends ChangeNotifier {
       throw Exception('No available bike found at the selected station');
     }
 
-    await _bookingRepository.createBooking(
+    await _bookingRepository.createRenting(
       bikeId: bikeId,
       stationId: _station.id,
     );

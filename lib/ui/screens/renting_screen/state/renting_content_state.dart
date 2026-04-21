@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../view_model/booking_model.dart';
-import 'booking_actions.dart';
+import '../view_model/renting_model.dart';
+import 'renting_actions.dart';
 import '../../../../utils/animations_util.dart';
 
 /// Mixin for managing booking screen state and animations
@@ -38,9 +38,9 @@ mixin BookingContentStateMixin<T extends StatefulWidget>
 
   /// Handle confirm booking button → Firebase call → navigate
   void handleConfirmBooking() {
-    BookingActions.handleConfirmBooking(
+    RentingActions.handleConfirmRenting(
       context,
-      context.read<BookingViewModel>(),
+      context.read<RentingViewModel>(),
       refreshBooking,
     );
   }
@@ -48,9 +48,9 @@ mixin BookingContentStateMixin<T extends StatefulWidget>
   /// Handle browse passes button → navigate to passes screen
   /// Captures returned user if pass was purchased
   void handleBrowsePasses() {
-    BookingActions.handleBrowsePasses(
+    RentingActions.handleBrowsePasses(
       context,
-      context.read<BookingViewModel>(),
+      context.read<RentingViewModel>(),
       refreshBooking,
     );
   }
@@ -58,6 +58,6 @@ mixin BookingContentStateMixin<T extends StatefulWidget>
   /// Handle buy ticket button → show payment dialog → purchase ticket
   /// On successful purchase, refresh UI to show confirm booking
   void handleBuyTicket() {
-    BookingActions.handleBuyTicket(context, refreshBooking);
+    RentingActions.handleBuyTicket(context, refreshBooking);
   }
 }

@@ -67,7 +67,7 @@ class PassRepositoryFirebase implements PassRepository {
       );
 
       final uri = FirebaseConfig.baseUri.replace(
-        path: '/passes/$ticketId.json',
+        path: '/tickets/$ticketId.json',
       );
       final response = await http.put(
         uri,

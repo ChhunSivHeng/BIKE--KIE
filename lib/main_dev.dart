@@ -1,6 +1,6 @@
 import 'package:provider/provider.dart';
-import 'data/repositories/bookingRepository/booking_repository.dart';
-import 'data/repositories/bookingRepository/booking_repository_firebase.dart';
+import 'data/repositories/rentingRepository/renting_repository.dart';
+import 'data/repositories/rentingRepository/renting_repository_firebase.dart';
 import 'data/repositories/stationRepository/station_repository.dart';
 import 'data/repositories/passRepository/pass_repository.dart';
 import 'data/repositories/passRepository/pass_repository_firebase.dart';
@@ -14,7 +14,7 @@ List<InheritedProvider> get devProviders {
   return [
     ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
     Provider<StationRepository>(create: (_) => StationRepositoryFirebase()),
-    Provider<BookingRepository>(create: (_) => BookingRepositoryFirebase()),
+    Provider<RentingRepository>(create: (_) => RentingRepositoryFirebase()),
     Provider<PassRepository>(create: (_) => PassRepositoryFirebase()),
     Provider<UserRepository>(
       create: (context) =>
