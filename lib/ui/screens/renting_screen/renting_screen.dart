@@ -30,7 +30,7 @@ class RentingScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => RentingViewModel(
         station: station,
-        bookingRepository: context.read<RentingRepository>(),
+        rentingRepository: context.read<RentingRepository>(),
         userRepository: context.read<UserRepository>(),
         passRepository: context.read<PassRepository>(),
       ),

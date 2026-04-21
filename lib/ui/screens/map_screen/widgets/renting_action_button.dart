@@ -3,21 +3,21 @@ import '../../../../utils/animations_util.dart';
 import '../../../../utils/app_theme.dart';
 
 /// Animated booking action button with smooth pulse and hover effects
-class BookingActionButton extends StatefulWidget {
+class RentingActionButton extends StatefulWidget {
   final bool hasAvailableBikes;
-  final VoidCallback onBook;
+  final VoidCallback onRent;
 
-  const BookingActionButton({
+  const RentingActionButton({
     super.key,
     required this.hasAvailableBikes,
-    required this.onBook,
+    required this.onRent,
   });
 
   @override
-  State<BookingActionButton> createState() => _BookingActionButtonState();
+  State<RentingActionButton> createState() => _RentingActionButtonState();
 }
 
-class _BookingActionButtonState extends State<BookingActionButton>
+class _RentingActionButtonState extends State<RentingActionButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
@@ -53,7 +53,7 @@ class _BookingActionButtonState extends State<BookingActionButton>
               child: ElevatedButton.icon(
                 onPressed: () {
                   _controller.stop();
-                  widget.onBook();
+                  widget.onRent();
                 },
                 icon: const Icon(Icons.check_circle_outline),
                 label: const Text('BOOK THIS BIKE'),

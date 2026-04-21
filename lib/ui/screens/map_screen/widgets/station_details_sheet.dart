@@ -4,7 +4,7 @@ import '../../../../model/station.dart';
 import '../../renting_screen/renting_screen.dart';
 import '../view_model/station_details_model.dart';
 import 'available_bikes_section.dart';
-import 'booking_action_button.dart';
+import 'renting_action_button.dart';
 import 'nearby_stations_section.dart';
 import 'station_info_card.dart';
 import 'station_stats_section.dart';
@@ -46,7 +46,7 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
     super.dispose();
   }
 
-  void _handleBookBike() {
+  void _handleRentBike() {
     // Navigate to booking screen with the current station
     Navigator.push(
       context,
@@ -66,12 +66,12 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
     const SizedBox(height: 24),
     AvailableBikesSection(
       station: vm.currentStation,
-      onBookBike: _handleBookBike,
+      onRentBike: _handleRentBike,
     ),
     const SizedBox(height: 20),
-    BookingActionButton(
+    RentingActionButton(
       hasAvailableBikes: vm.hasAvailableBikes,
-      onBook: _handleBookBike,
+      onRent: _handleRentBike,
     ),
     const SizedBox(height: 24),
     if (vm.getNearbyStations().isNotEmpty)

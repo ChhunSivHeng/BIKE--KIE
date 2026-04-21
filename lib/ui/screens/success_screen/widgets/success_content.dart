@@ -73,7 +73,7 @@ class _SuccessContentState extends State<SuccessContent>
                   const SizedBox(height: 32),
                   // Success Title
                   const Text(
-                    'Bike Booked!',
+                    'Bike rented!',
                     style: TextStyle(
                       color: AppColors.black,
                       fontSize: 28,

@@ -26,7 +26,7 @@ import '../../../../data/repositories/passRepository/pass_repository.dart';
 /// 3. Buy ticket: buySingleTicket() → PassRepository.createTicket() → UserRepository.setActivePass()
 class RentingViewModel extends ChangeNotifier {
   final Station? _station;
-  final RentingRepository _bookingRepository;
+  final RentingRepository _rentingRepository;
   final UserRepository _userRepository;
   final PassRepository _passRepository;
 
@@ -36,11 +36,11 @@ class RentingViewModel extends ChangeNotifier {
 
   RentingViewModel({
     Station? station,
-    required RentingRepository bookingRepository,
+    required RentingRepository rentingRepository,
     required UserRepository userRepository,
     required PassRepository passRepository,
   }) : _station = station,
-       _bookingRepository = bookingRepository,
+       _rentingRepository = rentingRepository,
        _userRepository = userRepository,
        _passRepository = passRepository {
     _initializeUser();
@@ -93,7 +93,7 @@ class RentingViewModel extends ChangeNotifier {
   /// 4. Returns when Firebase confirms booking creation
   Future<void> confirmRenting() async {
     if (_station == null) {
-      throw Exception('No station selected for booking');
+      throw Exception('No station selected for bike renting');
     }
 
     final bikeId = _station.availableBikes
@@ -104,13 +104,13 @@ class RentingViewModel extends ChangeNotifier {
       throw Exception('No available bike found at the selected station');
     }
 
-    await _bookingRepository.createRenting(
+    await _rentingRepository.createRenting(
       bikeId: bikeId,
       stationId: _station.id,
     );
 
     debugPrint(
-      'Booking confirmed for station: ${_station.name} with pass: $activePassType',
+      'Renting confirmed for station: ${_station.name} with pass: $activePassType',
     );
   }
 

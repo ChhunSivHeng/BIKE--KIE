@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../../utils/animations_util.dart';
 
 /// Animated booking confirmation dialog with smooth scale and fade effects
-class BookingConfirmationDialog extends StatefulWidget {
+class RentingConfirmationDialog extends StatefulWidget {
   final String stationName;
   final VoidCallback onConfirm;
   final VoidCallback? onCancel;
 
-  const BookingConfirmationDialog({
+  const RentingConfirmationDialog({
     super.key,
     required this.stationName,
     required this.onConfirm,
@@ -15,8 +15,8 @@ class BookingConfirmationDialog extends StatefulWidget {
   });
 
   @override
-  State<BookingConfirmationDialog> createState() =>
-      _BookingConfirmationDialogState();
+  State<RentingConfirmationDialog> createState() =>
+      _RentingConfirmationDialogState();
 
   /// Static method to show the dialog
   static void show(
@@ -27,7 +27,7 @@ class BookingConfirmationDialog extends StatefulWidget {
   }) {
     showDialog(
       context: context,
-      builder: (context) => BookingConfirmationDialog(
+      builder: (context) => RentingConfirmationDialog(
         stationName: stationName,
         onConfirm: onConfirm,
         onCancel: onCancel,
@@ -36,7 +36,7 @@ class BookingConfirmationDialog extends StatefulWidget {
   }
 }
 
-class _BookingConfirmationDialogState extends State<BookingConfirmationDialog>
+class _RentingConfirmationDialogState extends State<RentingConfirmationDialog>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -70,9 +70,9 @@ class _BookingConfirmationDialogState extends State<BookingConfirmationDialog>
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: AlertDialog(
-          title: const Text('Confirm Booking'),
+          title: const Text('Confirm Renting'),
           content: Text(
-            'Book a bike from ${widget.stationName}?\n\nYou can reserve it for up to 15 minutes.',
+            'Rent a bike from ${widget.stationName}?',
           ),
           actions: [
             TextButton(
@@ -87,7 +87,7 @@ class _BookingConfirmationDialogState extends State<BookingConfirmationDialog>
                 Navigator.pop(context);
                 widget.onConfirm();
               },
-              child: const Text('Book Now'),
+              child: const Text('Rent Now'),
             ),
           ],
         ),
@@ -100,7 +100,7 @@ class _BookingConfirmationDialogState extends State<BookingConfirmationDialog>
 void showBookingSuccessSnackBar(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: const Text('✓ Bike booked successfully!'),
+      content: const Text('✓ Bike rented successfully!'),
       backgroundColor: Colors.green,
       duration: const Duration(seconds: 2),
       behavior: SnackBarBehavior.floating,

@@ -13,35 +13,35 @@ import '../../../../utils/animations_util.dart';
 ///
 /// Used by: _BookingContentState
 /// Separated to keep booking_content.dart focused on UI building
-mixin BookingContentStateMixin<T extends StatefulWidget>
+mixin RentingContentStateMixin<T extends StatefulWidget>
     on State<T>, SingleTickerProviderStateMixin<T> {
-  late AnimationController bookingController;
+  late AnimationController rentingController;
   late Animation<double> fadeAnimation;
 
   /// Initialize animation controller and fade animation
-  void initBookingState() {
-    bookingController = AnimationController(
+  void initRentingState() {
+    rentingController = AnimationController(
       duration: AnimationUtils.normal,
       vsync: this,
     );
-    fadeAnimation = AnimationUtils.createFadeAnimation(bookingController);
-    bookingController.forward();
+    fadeAnimation = AnimationUtils.createFadeAnimation(rentingController);
+    rentingController.forward();
   }
 
   /// Clean up animation controller
-  void disposeBookingState() {
-    bookingController.dispose();
+  void disposeRentingState() {
+    rentingController.dispose();
   }
 
   /// Trigger UI rebuild
-  void refreshBooking() => setState(() {});
+  void refreshRenting() => setState(() {});
 
   /// Handle confirm booking button → Firebase call → navigate
-  void handleConfirmBooking() {
+  void handleConfirmRenting() {
     RentingActions.handleConfirmRenting(
       context,
       context.read<RentingViewModel>(),
-      refreshBooking,
+      refreshRenting,
     );
   }
 
@@ -51,13 +51,13 @@ mixin BookingContentStateMixin<T extends StatefulWidget>
     RentingActions.handleBrowsePasses(
       context,
       context.read<RentingViewModel>(),
-      refreshBooking,
+      refreshRenting,
     );
   }
 
   /// Handle buy ticket button → show payment dialog → purchase ticket
   /// On successful purchase, refresh UI to show confirm booking
   void handleBuyTicket() {
-    RentingActions.handleBuyTicket(context, refreshBooking);
+    RentingActions.handleBuyTicket(context, refreshRenting);
   }
 }

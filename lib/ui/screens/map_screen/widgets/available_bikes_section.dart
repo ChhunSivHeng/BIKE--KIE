@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../model/bike.dart';
 import '../../../../model/station.dart';
 import '../../../../utils/animations_util.dart';
 import '../../../../utils/app_theme.dart';
@@ -6,12 +7,12 @@ import '../../../../utils/app_theme.dart';
 /// Reusable widget for available bikes section with smooth entrance animations
 class AvailableBikesSection extends StatefulWidget {
   final Station station;
-  final VoidCallback? onBookBike;
+  final VoidCallback? onRentBike;
 
   const AvailableBikesSection({
     super.key,
     required this.station,
-    this.onBookBike,
+    this.onRentBike,
   });
 
   @override
@@ -42,6 +43,8 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
 
   @override
   Widget build(BuildContext context) {
+    final bikes = widget.station.availableBikeEntries;
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Column(
@@ -65,18 +68,22 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
           ),
           const SizedBox(height: 12),
           // Principle 6: Recognition rather than recall - Show only available bikes
-          if (widget.station.bikeAmounts > 0)
+          if (bikes.isNotEmpty)
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: widget.station.bikeAmounts,
+              itemCount: bikes.length,
               itemBuilder: (context, index) {
+                final entry = bikes[index];
+                final slotIndex = entry.key;
+                final bike = entry.value;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _AnimatedBikeSlotCard(
-                    slotNumber: index + 1,
-                    onBook: widget.onBookBike,
+                    slotNumber: slotIndex + 1,
+                    onRent: widget.onRentBike,
                     animationDelay: index * 50,
+                    bike: bike,
                   ),
                 );
               },
@@ -130,13 +137,15 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
 /// Animated bike slot card component
 class _AnimatedBikeSlotCard extends StatefulWidget {
   final int slotNumber;
-  final VoidCallback? onBook;
+  final Bike bike;
+  final VoidCallback? onRent;
   final int animationDelay;
 
   const _AnimatedBikeSlotCard({
     required this.slotNumber,
-    this.onBook,
+    this.onRent,
     this.animationDelay = 0,
+    required this.bike,
   });
 
   @override
@@ -195,26 +204,42 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.pedal_bike,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
+                child: widget.bike.batteryLevel != null
+                    ? Icon(
+                        Icons.electric_bike,
+                        color: AppColors.success,
+                        size: 20,
+                      )
+                    : Icon(
+                        Icons.pedal_bike,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Available Bike',
-                      style: TextStyle(
-                        color: AppColors.black,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.1,
-                      ),
-                    ),
+                    widget.bike.batteryLevel != null
+                        ? Text(
+                            'Electric Bike | Battery Level: ${widget.bike.batteryLevel}%',
+                            style: TextStyle(
+                              color: AppColors.success,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.1,
+                            ),
+                          )
+                        : Text(
+                            'Mechanical Bike',
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
                     Text(
                       'Slot #${widget.slotNumber}',
                       style: const TextStyle(
@@ -226,11 +251,11 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
                   ],
                 ),
               ),
-              if (widget.onBook != null)
+              if (widget.onRent != null)
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: widget.onBook,
+                    onTap: widget.onRent,
                     borderRadius: BorderRadius.circular(6),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -242,7 +267,7 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Text(
-                        'Book',
+                        'Rent',
                         style: TextStyle(
                           color: AppColors.primary,
                           fontSize: 11,

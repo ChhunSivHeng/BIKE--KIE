@@ -17,7 +17,14 @@ class Station {
     this.longitude,
   });
 
-  int get bikeAmounts => availableBikes.length;
+  int get bikeAmounts => availableBikes.nonNulls.toList().length;
+
+  List<MapEntry<int, Bike>> get availableBikeEntries => availableBikes
+      .asMap()
+      .entries
+      .where((e) => e.value != null)
+      .map((e) => MapEntry(e.key, e.value!))
+      .toList();
 
   @override
   String toString() =>

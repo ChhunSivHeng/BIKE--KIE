@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../utils/app_theme.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/display/alert_card.dart';
-import '../../../widgets/booking_header.dart';
+import '../../../widgets/renting_header.dart';
 import '../../../widgets/map_preview.dart';
 import '../../../widgets/pass_info_card.dart';
 import '../../../widgets/station_info_card.dart';
@@ -11,12 +11,12 @@ import '../state/renting_content_state.dart';
 import '../view_model/renting_model.dart';
 
 /// Booking screen text constants
-class _BookingTexts {
+class _RentingTexts {
   static const String screenTitle = 'Stations Details';
-  static const String headerTitleConfirm = 'Confirm Your Booking';
+  static const String headerTitleConfirm = 'Confirm Your Renting';
   static const String headerSubtitleConfirm =
       'Ready for your ride across Toulouse?';
-  static const String headerTitleNoPass = 'Get a Pass to Book';
+  static const String headerTitleNoPass = 'Get a Pass to Rent';
   static const String headerSubtitleNoPass = 'Choose how you want to ride';
 }
 
@@ -40,16 +40,16 @@ class RentingContent extends StatefulWidget {
 }
 
 class _RentingContentState extends State<RentingContent>
-    with SingleTickerProviderStateMixin, BookingContentStateMixin {
+    with SingleTickerProviderStateMixin, RentingContentStateMixin {
   @override
   void initState() {
     super.initState();
-    initBookingState();
+    initRentingState();
   }
 
   @override
   void dispose() {
-    disposeBookingState();
+    disposeRentingState();
     super.dispose();
   }
 
@@ -67,7 +67,7 @@ class _RentingContentState extends State<RentingContent>
           icon: const Icon(Icons.arrow_back, color: AppColors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(_BookingTexts.screenTitle),
+        title: const Text(_RentingTexts.screenTitle),
         centerTitle: true,
       ),
       body: _buildContent(vm, theme),
@@ -91,13 +91,13 @@ class _RentingContentState extends State<RentingContent>
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: BookingHeader(
+              child: RentingHeader(
                 title: hasPass
-                    ? _BookingTexts.headerTitleConfirm
-                    : _BookingTexts.headerTitleNoPass,
+                    ? _RentingTexts.headerTitleConfirm
+                    : _RentingTexts.headerTitleNoPass,
                 subtitle: hasPass
-                    ? _BookingTexts.headerSubtitleConfirm
-                    : _BookingTexts.headerSubtitleNoPass,
+                    ? _RentingTexts.headerSubtitleConfirm
+                    : _RentingTexts.headerSubtitleNoPass,
               ),
             ),
             const SizedBox(height: 8),
@@ -127,7 +127,7 @@ class _RentingContentState extends State<RentingContent>
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: AlertCard(
           title: 'No Active Pass',
-          message: 'You need a pass to book. Choose an option below.',
+          message: 'You need a pass to rent. Choose an option below.',
           backgroundColor: const Color(0xFFFFF3E0),
           borderColor: const Color(0xFFFFD54F),
           textColor: const Color(0xFFF57C00),
@@ -157,7 +157,7 @@ class _RentingContentState extends State<RentingContent>
                 label: 'Valid Until',
                 value: vm.activePassEndDate ?? 'N/A',
               ),
-              PassDetailItem(label: 'Booking Fee', value: 'INCLUDED'),
+              PassDetailItem(label: 'Renting Fee', value: 'INCLUDED'),
             ],
           ),
         ],
@@ -175,8 +175,8 @@ class _RentingContentState extends State<RentingContent>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppButton(
-        label: 'CONFIRM BOOKING',
-        onPressed: handleConfirmBooking,
+        label: 'CONFIRM RENTING',
+        onPressed: handleConfirmRenting,
         height: 52,
         borderRadius: 12,
       ),

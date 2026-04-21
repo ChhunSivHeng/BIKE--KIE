@@ -36,7 +36,7 @@ class StationDetailsViewModel extends ChangeNotifier {
   }
 
   /// Book a bike from current station
-  void bookBike() {
+  void rentBike() {
     if (hasAvailableBikes) {
       // TODO: Implement booking logic with repository
       notifyListeners();

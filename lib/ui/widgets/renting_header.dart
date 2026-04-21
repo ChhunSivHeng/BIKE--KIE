@@ -3,13 +3,13 @@ import '../../utils/app_theme.dart';
 
 /// Reusable booking header component
 /// Displays title and subtitle based on booking state
-class BookingHeader extends StatelessWidget {
+class RentingHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
 
-  const BookingHeader({
+  const RentingHeader({
     super.key,
     required this.title,
     required this.subtitle,

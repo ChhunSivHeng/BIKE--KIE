@@ -67,7 +67,7 @@ class NoPassCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Subscribe to a pass to unlock unlimited bike bookings and enjoy exclusive benefits.',
+            'Subscribe to a pass to unlock unlimited bike renting and enjoy exclusive benefits.',
             style: TextStyle(
               fontSize: 13,
               color: AppColors.gray700,
