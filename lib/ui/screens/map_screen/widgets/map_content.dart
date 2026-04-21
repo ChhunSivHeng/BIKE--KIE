@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../model/station.dart';
 import '../../../../utils/app_theme.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong2.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../ui/widgets/display/search_bar.dart';

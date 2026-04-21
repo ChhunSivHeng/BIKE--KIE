@@ -32,7 +32,7 @@ class AppSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        if (child != null) child!,
+        ?child,
       ],
     );
   }
