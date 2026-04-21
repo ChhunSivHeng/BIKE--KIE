@@ -97,7 +97,7 @@ class _RentingConfirmationDialogState extends State<RentingConfirmationDialog>
 }
 
 /// Utility to show success snackbar with smooth animation
-void showBookingSuccessSnackBar(BuildContext context) {
+void showRentingSuccessSnackBar(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: const Text('✓ Bike rented successfully!'),

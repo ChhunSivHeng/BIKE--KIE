@@ -56,7 +56,7 @@ class _RentingActionButtonState extends State<RentingActionButton>
                   widget.onRent();
                 },
                 icon: const Icon(Icons.check_circle_outline),
-                label: const Text('BOOK THIS BIKE'),
+                label: const Text('RENT THIS BIKE'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
