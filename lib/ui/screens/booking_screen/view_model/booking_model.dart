@@ -161,8 +161,32 @@ class BookingViewModel extends ChangeNotifier {
   }
 
   /// Set user with a pass (used when returning from passes screen)
-  void setUserWithPass(User userWithPass) {
+  /// After purchase, automatically updates local state and notifies listeners
+  void updateUserWithPass(User userWithPass) {
     _user = userWithPass;
+    _error = null;
+    debugPrint(
+      'User updated with new pass: ${userWithPass.activePass?.type.name}',
+    );
     notifyListeners();
+  }
+
+  /// Refresh user data from Firebase
+  /// Used to ensure latest user state after external updates
+  Future<void> refreshUserData() async {
+    try {
+      _isLoadingUser = true;
+      notifyListeners();
+
+      final currentUser = await _userRepository.getCurrentUser();
+      _user = currentUser;
+      _error = null;
+    } catch (e) {
+      _error = 'Failed to refresh user: $e';
+      debugPrint('Error refreshing user: $e');
+    } finally {
+      _isLoadingUser = false;
+      notifyListeners();
+    }
   }
 }

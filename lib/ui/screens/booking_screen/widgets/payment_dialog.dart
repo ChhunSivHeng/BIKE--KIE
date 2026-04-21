@@ -3,8 +3,14 @@ import '../../../../utils/app_theme.dart';
 import 'ticket_detail_row.dart';
 
 /// Payment confirmation dialog for buying single tickets
+///
+/// Flow:
+/// 1. Show ticket details (1-hour duration, $5.00 price)
+/// 2. User clicks Confirm → triggers payment processing
+/// 3. Show processing steps: Validating → Processing → Confirming
+/// 4. After completion, dismiss dialog automatically
 class PaymentDialog extends StatefulWidget {
-  final VoidCallback onConfirm;
+  final Future<void> Function() onConfirm;
   final VoidCallback onCancel;
 
   const PaymentDialog({
@@ -22,6 +28,14 @@ class _PaymentDialogState extends State<PaymentDialog>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+
+  bool _isProcessing = false;
+  String? _processingStep;
+  final List<String> _paymentSteps = [
+    'Validating payment...',
+    'Processing payment...',
+    'Confirming purchase...',
+  ];
 
   @override
   void initState() {
@@ -50,6 +64,58 @@ class _PaymentDialogState extends State<PaymentDialog>
     super.dispose();
   }
 
+  /// Process payment with animated steps
+  Future<void> _processPayment() async {
+    setState(() {
+      _isProcessing = true;
+      _processingStep = _paymentSteps[0];
+    });
+
+    try {
+      // Simulate each payment processing step
+      for (int i = 0; i < _paymentSteps.length; i++) {
+        if (!mounted) return;
+
+        setState(() {
+          _processingStep = _paymentSteps[i];
+        });
+
+        // Each step takes 400ms
+        await Future.delayed(const Duration(milliseconds: 400));
+      }
+
+      // Call the actual payment confirmation
+      await widget.onConfirm();
+
+      // Show success state briefly
+      if (mounted) {
+        setState(() {
+          _processingStep = '✓ Payment successful!';
+        });
+
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+          _processingStep = 'Payment failed: $e';
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaleTransition(
@@ -66,87 +132,123 @@ class _PaymentDialogState extends State<PaymentDialog>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Confirm Purchase',
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.3,
+              if (!_isProcessing) ...[
+                const Text(
+                  'Confirm Purchase',
+                  style: TextStyle(
+                    color: AppColors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.gray50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.gray200),
+                  ),
+                  child: Column(
+                    children: [
+                      const TicketDetailRow(label: 'Duration', value: '1 Day'),
+                      const SizedBox(height: 12),
+                      const Divider(color: AppColors.gray200, height: 1),
+                      const SizedBox(height: 12),
+                      const TicketDetailRow(label: 'Price', value: '\$5.00'),
+                    ],
+                  ),
+                ),
+              ] else ...[
+                // Processing state
+                const SizedBox(height: 20),
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: Text(
+                          _processingStep ?? 'Processing...',
+                          key: ValueKey<String>(_processingStep ?? ''),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: AppColors.gray700,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
               const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.gray50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.gray200),
-                ),
-                child: Column(
+              if (!_isProcessing) ...[
+                Row(
                   children: [
-                    TicketDetailRow(label: 'Duration', value: '1 Hour'),
-                    const SizedBox(height: 12),
-                    const Divider(color: AppColors.gray200, height: 1),
-                    const SizedBox(height: 12),
-                    TicketDetailRow(label: 'Price', value: '\$5.00'),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          widget.onCancel();
+                          Navigator.of(context).pop();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                            color: AppColors.gray300,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: AppColors.gray600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _processPayment,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        widget.onCancel();
-                        Navigator.of(context).pop();
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                          color: AppColors.gray300,
-                          width: 1.5,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: AppColors.gray600,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        widget.onConfirm();
-                        Navigator.of(context).pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Confirm',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ],
           ),
         ),

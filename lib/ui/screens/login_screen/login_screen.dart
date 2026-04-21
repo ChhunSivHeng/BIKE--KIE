@@ -1,0 +1,35 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../services/auth_service.dart';
+import 'widgets/login_form.dart';
+
+/// LoginScreen
+///
+/// Entry point for login flow.
+/// Only displayed when user is not authenticated.
+///
+/// Architecture:
+/// - LoginScreen (UI container, dependency injection)
+///   ├─ LoginForm (UI orchestrator)
+///   │  ├─ LoginViewModel (state & business logic)
+///   │  └─ UI Widgets (header, input, button, etc)
+///   └─ AuthService (authentication service)
+///
+/// Principles Applied:
+/// - Separation of Concerns: UI, state, and auth are separate
+/// - Dependency Injection: AuthService passed to LoginForm
+/// - User-Friendly: UX principles applied throughout
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: LoginForm(authService: context.read<AuthService>()),
+      ),
+    );
+  }
+}

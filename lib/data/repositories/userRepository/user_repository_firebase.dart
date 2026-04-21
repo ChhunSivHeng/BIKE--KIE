@@ -7,18 +7,30 @@ import '../../dtos/user_dto.dart';
 import '../../firebase/firebase_database.dart';
 import '../../../model/pass.dart';
 import '../../../model/user.dart';
+import '../../../services/auth_service.dart';
 import 'user_repository.dart';
 
 /// Firebase implementation of UserRepository using Realtime Database
 class UserRepositoryFirebase implements UserRepository {
+  final AuthService _authService;
+
+  UserRepositoryFirebase({required AuthService authService})
+    : _authService = authService;
+
+  String get _currentUserId {
+    final userId = _authService.currentUserId;
+    if (userId == null || userId.isEmpty) {
+      throw Exception('No user logged in');
+    }
+    return userId;
+  }
+
   /// Get current user from Firebase
-  ///
-  /// For now, returns a default user with ID from local storage or environment
-  /// In production, integrate with Firebase Authentication
   @override
   Future<User> getCurrentUser() async {
     try {
-      final uri = FirebaseConfig.baseUri.replace(path: '/users/user_001.json');
+      final userId = _currentUserId;
+      final uri = FirebaseConfig.baseUri.replace(path: '/users/$userId.json');
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -30,10 +42,9 @@ class UserRepositoryFirebase implements UserRepository {
       }
 
       // Return default user if not found
-      return const User(id: 'user_001', activePass: null);
+      return User(id: userId, activePass: null);
     } catch (e) {
-      // Return default user on error
-      return const User(id: 'user_001', activePass: null);
+      throw Exception('Failed to get current user: $e');
     }
   }
 
@@ -41,9 +52,10 @@ class UserRepositoryFirebase implements UserRepository {
   @override
   Future<User> setActivePass(Pass? pass) async {
     try {
-      final uri = FirebaseConfig.baseUri.replace(path: '/users/user_001.json');
+      final userId = _currentUserId;
+      final uri = FirebaseConfig.baseUri.replace(path: '/users/$userId.json');
       final userDto = UserDto(
-        id: 'user_001',
+        id: userId,
         activePass: pass != null ? PassDto.fromModel(pass) : null,
       );
 
@@ -54,7 +66,7 @@ class UserRepositoryFirebase implements UserRepository {
       );
 
       if (response.statusCode == 200) {
-        return User(id: 'user_001', activePass: pass);
+        return User(id: userId, activePass: pass);
       }
 
       throw Exception('Failed to update user pass (${response.statusCode})');

@@ -22,7 +22,6 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('object');
       List<Station> stations = await _repo.getStations();
 
       if (onlyShowAvailableBike) {
@@ -34,7 +33,6 @@ class MapViewModel extends ChangeNotifier {
 
       _state = AsyncValue<List<Station>>.success(stations);
     } catch (e) {
-      print(e);
       _state = AsyncValue.error('Failed to load stations.');
     }
     notifyListeners();

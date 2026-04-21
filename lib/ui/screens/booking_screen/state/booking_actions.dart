@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../model/user.dart';
 import '../view_model/booking_model.dart';
 import '../widgets/payment_dialog.dart';
 import '../../success_screen/success_screen.dart';
-
-/// Show success message for ticket purchase
-void _showTicketPurchaseSuccess(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: const Text('✓ Ticket purchased! You can now book a bike.'),
-      backgroundColor: Colors.green,
-      duration: const Duration(seconds: 2),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      margin: const EdgeInsets.all(16),
-    ),
-  );
-}
 
 /// Action handlers for booking screen user interactions
 ///
@@ -48,18 +35,32 @@ class BookingActions {
   }
 
   /// Navigate to passes browsing screen
-  static void handleBrowsePasses(BuildContext context, VoidCallback onReturn) {
-    Navigator.pushNamed(context, '/passes').then((_) => onReturn());
+  ///
+  /// After user purchases a pass, captures the returned User data
+  /// and updates the BookingViewModel to show the confirm booking screen
+  static void handleBrowsePasses(
+    BuildContext context,
+    BookingViewModel viewModel,
+    VoidCallback onReturn,
+  ) {
+    Navigator.pushNamed(context, '/passes').then((result) {
+      // If user purchased a pass, result will be the updated User
+      if (result is User && context.mounted) {
+        viewModel.updateUserWithPass(result);
+      }
+      onReturn();
+    });
   }
 
   /// Show payment dialog for single ticket purchase with Firebase integration
   ///
   /// Flow:
-  /// 1. Show payment confirmation dialog
-  /// 2. On confirm: Call viewModel.buySingleTicket() (awaits Firebase)
-  /// 3. Show success message
-  /// 4. Dismiss dialog
-  static void handleBuyTicket(BuildContext context) {
+  /// 1. Show payment dialog with confirmation
+  /// 2. User clicks Confirm → ProcessPayment shows steps
+  /// 3. onConfirm callback: Creates ticket in Firebase via viewModel.buySingleTicket()
+  /// 4. Dialog closes automatically on success
+  /// 5. BookingViewModel state is automatically updated with new ticket pass
+  static void handleBuyTicket(BuildContext context, VoidCallback onSuccess) {
     final viewModel = context.read<BookingViewModel>();
     showDialog(
       context: context,
@@ -68,16 +69,14 @@ class BookingActions {
           try {
             // Create ticket in Firebase and set as active pass
             await viewModel.buySingleTicket();
-            _showTicketPurchaseSuccess(context);
-            if (context.mounted) {
-              Navigator.of(dialogContext).pop();
-            }
+            onSuccess();
           } catch (e) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Error: ${viewModel.error}'),
                   backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 3),
                 ),
               );
             }

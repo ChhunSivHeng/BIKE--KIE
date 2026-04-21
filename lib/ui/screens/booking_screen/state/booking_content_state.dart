@@ -46,15 +46,18 @@ mixin BookingContentStateMixin<T extends StatefulWidget>
   }
 
   /// Handle browse passes button → navigate to passes screen
+  /// Captures returned user if pass was purchased
   void handleBrowsePasses() {
-    BookingActions.handleBrowsePasses(context, refreshBooking);
+    BookingActions.handleBrowsePasses(
+      context,
+      context.read<BookingViewModel>(),
+      refreshBooking,
+    );
   }
 
-  /// Handle buy ticket button → show payment dialog
+  /// Handle buy ticket button → show payment dialog → purchase ticket
+  /// On successful purchase, refresh UI to show confirm booking
   void handleBuyTicket() {
-    BookingActions.handleBuyTicket(context);
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) refreshBooking();
-    });
+    BookingActions.handleBuyTicket(context, refreshBooking);
   }
 }
