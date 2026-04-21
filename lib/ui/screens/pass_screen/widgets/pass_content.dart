@@ -4,6 +4,7 @@ import '../../../../../model/pass.dart';
 import '../../../../utils/app_theme.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/navigation/app_header.dart';
+import '../../../widgets/payment/payment_sheet.dart';
 import '../view_model/pass_model.dart';
 import 'pass_card.dart';
 import 'pass_status_card.dart';
@@ -35,7 +36,7 @@ class PassContent extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
                     children: [
-                      // Pass Selection Header
+
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -60,13 +61,11 @@ class PassContent extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
 
-                      // Show user's current pass if they have one
                       if (vm.hasCurrentPass)
                         _buildCurrentPassSection(vm, context),
 
                       if (vm.hasCurrentPass) const SizedBox(height: 24),
 
-                      // Show available passes
                       if (!vm.hasCurrentPass)
                         PassStatusCard(
                           activePass: activePass,
@@ -75,8 +74,6 @@ class PassContent extends StatelessWidget {
                         ),
 
                       if (!vm.hasCurrentPass) const SizedBox(height: 12),
-
-                      // Title for available passes
                       if (!vm.hasCurrentPass)
                         Padding(
                           padding: const EdgeInsets.only(top: 8, bottom: 12),
@@ -109,33 +106,34 @@ class PassContent extends StatelessWidget {
                         AppButton(
                           label: vm.isProcessingPayment
                               ? 'Processing...'
-                              : 'Process Payment',
+                              : 'Buy Pass',
                           onPressed: () async {
-                            final success = await vm.processPayment();
-                            if (success && context.mounted) {
+                            final selectedPass = vm.selectedPass;
+                            if (selectedPass == null || !context.mounted) {
+                              return;
+                            }
+
+                            final paid = await PaymentSheet.show(
+                              context,
+                              title: 'Confirm Pass Purchase',
+                              amountLabel:
+                                  '\$${selectedPass.price.toStringAsFixed(2)}',
+                              confirmButtonLabel: 'Pay & Activate',
+                              successMessage: 'Pass Activated',
+                              onConfirmPayment: vm.processPayment,
+                            );
+
+                            if (paid == true && context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    '✓ ${vm.selectedPass?.type.name.toUpperCase()} pass purchased!',
+                                    '✓ ${selectedPass.type.name.toUpperCase()} pass purchased!',
                                   ),
                                   backgroundColor: Colors.green,
                                   duration: const Duration(seconds: 2),
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  margin: const EdgeInsets.all(16),
                                 ),
                               );
-                              await Future.delayed(
-                                const Duration(milliseconds: 500),
-                              );
-                              if (context.mounted) {
-                                Navigator.of(
-                                  context,
-                                ).pop(vm.purchasedUserState);
-                              }
-                            } else if (!success && context.mounted) {
+                            } else if (paid != true && context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(vm.error ?? 'Payment failed'),
