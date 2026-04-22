@@ -31,28 +31,7 @@ class StationDetailsSheet extends StatefulWidget {
 class _StationDetailsSheetState extends State<StationDetailsSheet> {
   late StationDetailsViewModel _viewModel;
 
-  @override
-  void initState() {
-    super.initState();
-    _viewModel = StationDetailsViewModel(
-      initialStation: widget.initialStation,
-      allStations: widget.allStations,
-      onStationChanged: widget.onStationChanged,
-    );
-  }
-
-  @override
-  void dispose() {
-    _viewModel.dispose();
-    super.dispose();
-  }
-
-  /// Navigate to RentingScreen.
-  ///
-  /// [selectedBike] and [selectedSlotIndex] are set when the user taps
-  /// a specific bike card — otherwise the renting screen picks the first
-  /// available bike automatically.
-  void _handleRentBike({Bike? selectedBike, int? selectedSlotIndex}) {
+  void _navigateToRentingScreen({Bike? selectedBike, int? selectedSlotIndex}) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -63,6 +42,28 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = StationDetailsViewModel(
+      initialStation: widget.initialStation,
+      allStations: widget.allStations,
+      onStationChanged: widget.onStationChanged,
+      onRentRequested: ({selectedBike, selectedSlotIndex}) {
+        _navigateToRentingScreen(
+          selectedBike: selectedBike,
+          selectedSlotIndex: selectedSlotIndex,
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 
   List<Widget> _buildContent(StationDetailsViewModel vm) => [
@@ -77,13 +78,13 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
     AvailableBikesSection(
       station: vm.currentStation,
       onRentBike: (bike, slotIndex) =>
-          _handleRentBike(selectedBike: bike, selectedSlotIndex: slotIndex),
+          vm.rentSelectedBike(bike: bike, slotIndex: slotIndex),
     ),
     const SizedBox(height: 20),
     // Bottom button rents any available bike (no specific selection)
     RentingActionButton(
       hasAvailableBikes: vm.hasAvailableBikes,
-      onRent: () => _handleRentBike(),
+      onRent: () => vm.handleRentBike(),
     ),
     const SizedBox(height: 24),
     if (vm.getNearbyStations().isNotEmpty)
