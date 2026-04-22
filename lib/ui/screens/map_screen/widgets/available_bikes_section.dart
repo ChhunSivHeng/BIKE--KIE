@@ -123,7 +123,7 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Reserve for up to 15 minutes',
+                    'Rent for up to 15 minutes',
                     style: TextStyle(
                       color: AppColors.gray700,
                       fontSize: 12,

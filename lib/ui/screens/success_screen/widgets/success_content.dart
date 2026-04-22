@@ -84,7 +84,7 @@ class _SuccessContentState extends State<SuccessContent>
                   const SizedBox(height: 12),
                   // Success Message
                   Text(
-                    'Your bike is now reserved.\nHead to the station to pick it up!',
+                    'Your bike is now rented.\nHead to the station to pick it up!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.gray600,
