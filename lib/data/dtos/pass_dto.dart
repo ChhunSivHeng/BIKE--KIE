@@ -21,13 +21,46 @@ class PassDto {
 
   /// Create PassDto from JSON (Firebase response)
   factory PassDto.fromJson(Map<String, dynamic> json) {
+    final now = DateTime.now();
+
+    final type = (json['type'] as String?) ?? 'day';
+
+    final startDate = json['startDate'] != null
+        ? DateTime.parse(json['startDate'])
+        : now;
+
+    DateTime endDate;
+    if (json['endDate'] != null) {
+      endDate = DateTime.parse(json['endDate']);
+    } else {
+      switch (type.toLowerCase()) {
+        case 'monthly':
+          endDate = DateTime(
+            startDate.year,
+            startDate.month + 1,
+            startDate.day,
+          );
+          break;
+        case 'annual':
+          endDate = DateTime(
+            startDate.year + 1,
+            startDate.month,
+            startDate.day,
+          );
+          break;
+        case 'day':
+        default:
+          endDate = startDate.add(const Duration(days: 1));
+          break;
+      }
+    }
+
     return PassDto(
       id: json['id'] as String? ?? '',
-      type: json['type'] as String? ?? 'day',
+      type: type,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      startDate:
-          json['startDate'] as String? ?? DateTime.now().toIso8601String(),
-      endDate: json['endDate'] as String? ?? DateTime.now().toIso8601String(),
+      startDate: startDate.toIso8601String(),
+      endDate: endDate.toIso8601String(),
       isActive: json['isActive'] as bool? ?? false,
     );
   }

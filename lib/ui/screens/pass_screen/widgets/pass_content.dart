@@ -94,40 +94,52 @@ class PassContent extends StatelessWidget {
                             pass: pass,
                             isSelected: vm.selectedPass?.id == pass.id,
                             isCurrent: pass.isActive,
-                            onTap: vm.isProcessingPayment || vm.hasCurrentPass
+                            onTap: vm.isProcessingPayment
                                 ? () {}
                                 : () => vm.selectPass(pass),
                           ),
                         ),
                       ),
 
-                      if (selected != null && !vm.hasCurrentPass) ...[
+                      if (selected != null && !selected.isActive) ...[
                         const SizedBox(height: 16),
                         AppButton(
                           label: vm.isProcessingPayment
                               ? 'Processing...'
-                              : 'Buy Pass',
+                              : vm.hasCurrentPass
+                                  ? vm.isUpgrade
+                                      ? 'Upgrade Pass'
+                                      : vm.isExtension
+                                          ? 'Extend Pass'
+                                          : 'Switch Pass'
+                                  : 'Buy Pass',
                           onPressed: () async {
                             final selectedPass = vm.selectedPass;
                             if (selectedPass == null || !context.mounted) {
                               return;
                             }
 
+                            final isUpdate = vm.hasCurrentPass;
+                            final title = isUpdate ? 'Confirm Pass Update' : 'Confirm Pass Purchase';
+                            final successMsg = isUpdate ? 'Pass Updated' : 'Pass Activated';
+
                             final paid = await PaymentSheet.show(
                               context,
-                              title: 'Confirm Pass Purchase',
+                              title: title,
                               amountLabel:
                                   '\$${selectedPass.price.toStringAsFixed(2)}',
-                              confirmButtonLabel: 'Pay & Activate',
-                              successMessage: 'Pass Activated',
-                              onConfirmPayment: vm.processPayment,
+                              confirmButtonLabel: isUpdate ? 'Pay & Update' : 'Pay & Activate',
+                              successMessage: successMsg,
+                              onConfirmPayment: isUpdate ? vm.updatePass : vm.processPayment,
                             );
 
                             if (paid == true && context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    '✓ ${selectedPass.type.name.toUpperCase()} pass purchased!',
+                                    isUpdate 
+                                      ? '✓ Pass updated to ${selectedPass.type.name.toUpperCase()}!'
+                                      : '✓ ${selectedPass.type.name.toUpperCase()} pass purchased!',
                                   ),
                                   backgroundColor: Colors.green,
                                   duration: const Duration(seconds: 2),

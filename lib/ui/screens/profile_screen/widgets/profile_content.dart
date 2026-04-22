@@ -15,7 +15,9 @@ import 'no_pass_card.dart';
 /// 2. Pass status (active pass or subscribe CTA)
 /// 3. Logout button
 class ProfileContent extends StatelessWidget {
-  const ProfileContent({super.key});
+  static const int _passPage = 0;
+  final Function(int newTab) switchTab;
+  const ProfileContent({super.key, required this.switchTab});
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +69,7 @@ class ProfileContent extends StatelessWidget {
                 ),
               ] else ...[
                 NoPassCard(
-                  onSubscribe: () {
-                    // Navigate to pass screen
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    // Set index to Pass tab
-                    // This could be done with a callback or state management
-                  },
+                  onSubscribe: () => switchTab(_passPage), // switch to page 0 which is tha pass browsing page
                 ),
               ],
               const SizedBox(height: 32),
