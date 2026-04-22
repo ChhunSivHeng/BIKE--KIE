@@ -5,7 +5,11 @@ import 'package:bikkie/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'data/repositories/rentingRepository/renting_repository.dart';
+import 'data/repositories/stationRepository/station_repository.dart';
+import 'data/repositories/userRepository/user_repository.dart';
 import 'ui/screens/map_screen/map_screen.dart';
+import 'ui/screens/map_screen/view_model/map_view_model.dart';
 import 'utils/app_theme.dart';
 
 void mainCommon(List<InheritedProvider> providers) {
@@ -21,7 +25,6 @@ void mainCommon(List<InheritedProvider> providers) {
   );
 }
 
-/// Main app container that shows login or tabs based on auth state
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
@@ -29,12 +32,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        // If not logged in, show login screen
         if (!authService.isLoggedIn) {
           return const LoginScreen();
         }
-
-        // If logged in, show main app with tabs
         return const BikeApp();
       },
     );
@@ -51,52 +51,75 @@ class BikeApp extends StatefulWidget {
 class _BikeAppState extends State<BikeApp> {
   int _currentIndex = 1;
 
-  void tabSwitch(int newTab) {
-    setState(() {
-      _currentIndex = newTab;
-    });
+  // MapViewModel is created ONCE here and survives tab switches + navigation.
+  // This means when popUntil(isFirst) fires, the existing ViewModel is reused
+  // and hasPendingPickup is already true — the banner appears instantly.
+  late final MapViewModel _mapViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapViewModel = MapViewModel(
+      context.read<StationRepository>(),
+      context.read<UserRepository>(),
+      context.read<RentingRepository>(),
+    );
   }
 
-  List<Widget> get _pages => [
-    const PassScreen(),
-    const MapScreen(),
-    ProfileScreen(switchTab: tabSwitch),
-  ];
+  @override
+  void dispose() {
+    _mapViewModel.dispose();
+    super.dispose();
+  }
+
+  void _switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: _pages[_currentIndex],
-
-        bottomNavigationBar: BottomNavigationBarTheme(
-          data: AppTheme.lightTheme.bottomNavigationBarTheme,
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: tabSwitch,
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(
-                  (_currentIndex == 0)
-                      ? Icons.confirmation_num
-                      : Icons.confirmation_num_outlined,
-                ),
-                label: 'Pass',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  (_currentIndex == 1) ? Icons.map : Icons.map_outlined,
-                ),
-                label: 'Map',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  (_currentIndex == 2) ? Icons.person : Icons.person_outlined,
-                ),
-                label: 'Profile',
-              ),
+    return ChangeNotifierProvider<MapViewModel>.value(
+      value: _mapViewModel,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: IndexedStack(
+            // IndexedStack keeps all pages alive — no rebuild on tab switch.
+            index: _currentIndex,
+            children: [
+              const PassScreen(),
+              const MapScreen(),
+              ProfileScreen(switchTab: _switchTab),
             ],
+          ),
+          bottomNavigationBar: BottomNavigationBarTheme(
+            data: AppTheme.lightTheme.bottomNavigationBarTheme,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: _switchTab,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    _currentIndex == 0
+                        ? Icons.confirmation_num
+                        : Icons.confirmation_num_outlined,
+                  ),
+                  label: 'Pass',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    _currentIndex == 1 ? Icons.map : Icons.map_outlined,
+                  ),
+                  label: 'Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    _currentIndex == 2 ? Icons.person : Icons.person_outlined,
+                  ),
+                  label: 'Profile',
+                ),
+              ],
+            ),
           ),
         ),
       ),

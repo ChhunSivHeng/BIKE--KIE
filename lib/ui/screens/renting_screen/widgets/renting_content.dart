@@ -9,28 +9,22 @@ import '../../../../utils/app_theme.dart';
 import '../../../widgets/map_preview.dart';
 import '../../../widgets/renting_header.dart';
 import '../../../widgets/station_info_card.dart';
+import '../../map_screen/view_model/map_view_model.dart';
 import '../../pass_screen/pass_screen.dart';
 import '../../success_screen/success_screen.dart';
 import '../view_model/renting_model.dart';
 import 'payment_dialog.dart';
 import 'renting_bike_section.dart';
 
-// ── Screen-level text constants ───────────────────────────────────────────────
-
 class _Texts {
   static const screenTitle = 'Station Details';
-
   static const titleHasBike = 'Bike Assigned!';
   static const subtitleHasBike = 'Your bike is ready for your ride';
-
   static const titleConfirm = 'Confirm Your Renting';
-  static const subtitleConfirm = 'Ready for your ride across Toulouse?';
-
+  static const subtitleConfirm = 'Ready for your ride across Phnom Penh?';
   static const titleNoPass = 'Get a Pass to Rent';
   static const subtitleNoPass = 'Choose how you want to ride';
 }
-
-// ── Widget ────────────────────────────────────────────────────────────────────
 
 class RentingContent extends StatefulWidget {
   const RentingContent({super.key});
@@ -39,18 +33,6 @@ class RentingContent extends StatefulWidget {
   State<RentingContent> createState() => _RentingContentState();
 }
 
-/// Owns the fade-in animation and all UI event handlers for the renting screen.
-///
-/// Previously the animation lived in [RentingContentStateMixin] and handlers
-/// lived in [RentingActions] — both are now deleted. They only had one caller
-/// each, so a mixin and a static class were unnecessary indirection.
-///
-/// Responsibility split:
-///   _RentingContentState  → animation, navigation, dialog presentation
-///   RentingViewModel      → Firebase calls, user/bike/pass state
-///   RentingPassSection    → renders pass info or "no pass" alert
-///   RentingBikeSection    → renders assigned bike details
-///   RentingActionSection  → renders the correct bottom button(s)
 class _RentingContentState extends State<RentingContent>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
@@ -78,7 +60,14 @@ class _RentingContentState extends State<RentingContent>
   Future<void> _handleConfirmRenting() async {
     final vm = context.read<RentingViewModel>();
     try {
-      await vm.confirmRenting();
+      final renting = await vm.confirmRenting();
+
+      if (!mounted) return;
+
+      // Update the persistent MapViewModel immediately so the countdown
+      // banner is ready the moment we land back on the map.
+      context.read<MapViewModel>().refreshAfterRenting(renting, vm.user);
+
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -125,6 +114,10 @@ class _RentingContentState extends State<RentingContent>
     );
   }
 
+  void _handleViewTimer() {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
@@ -152,8 +145,6 @@ class _RentingContentState extends State<RentingContent>
       return const Center(child: Text('No station selected'));
     }
 
-    // hasBike checked first: after confirming, show "Bike Assigned" even if
-    // the user still has an active pass
     final headerTitle = vm.hasActiveBike
         ? _Texts.titleHasBike
         : vm.hasActivePass
@@ -180,10 +171,17 @@ class _RentingContentState extends State<RentingContent>
               ),
             ),
             const SizedBox(height: 8),
+
+            // Real map preview centred on the station
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: MapPreview(),
+              child: MapPreview(
+                latitude: vm.station!.latitude,
+                longitude: vm.station!.longitude,
+                badgeLabel: vm.station!.name,
+              ),
             ),
+
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -207,6 +205,7 @@ class _RentingContentState extends State<RentingContent>
               onConfirm: _handleConfirmRenting,
               onBrowsePasses: _handleBrowsePasses,
               onBuyTicket: _handleBuyTicket,
+              onViewTimer: _handleViewTimer,
             ),
             const SizedBox(height: 16),
           ],

@@ -23,11 +23,11 @@ class RentingRepositoryFirebase implements RentingRepository {
   @override
   Future<Renting> createRenting({
     required String userId,
-    required Bike bike, // full object so batteryLevel is stored on user
+    required Bike bike,
     required String stationId,
     required int slotIndex,
   }) async {
-    // ── Step 1: Create booking record ─────────────────────────────────────────
+    // ── Step 1: Create booking record ──────────────────────────────────────
     final renting = Renting(
       id: '',
       bikeId: bike.id,
@@ -58,9 +58,7 @@ class RentingRepositoryFirebase implements RentingRepository {
       throw Exception('Firebase did not return a booking id');
     }
 
-    // ── Step 2: Assign full bike object to user ───────────────────────────────
-    // Stored as { "activeBike": { "id": "...", "batteryLevel": 75 } }
-    // so UserDto.fromJson can reconstruct the Bike model with batteryLevel.
+    // ── Step 2: Assign full bike object to user ────────────────────────────
     final userUri = FirebaseConfig.baseUri.replace(path: '/users/$userId.json');
 
     final userResponse = await http.patch(
@@ -75,7 +73,7 @@ class RentingRepositoryFirebase implements RentingRepository {
       );
     }
 
-    // ── Step 3: Remove bike from station slot ─────────────────────────────────
+    // ── Step 3: Remove bike from station slot ──────────────────────────────
     await _stationRepository.removeBikeFromStation(stationId, slotIndex);
 
     return Renting(
@@ -109,5 +107,51 @@ class RentingRepositoryFirebase implements RentingRepository {
           ),
         )
         .toList();
+  }
+
+  /// Marks the booking as physically picked up and clears the reservation
+  /// flag on the user so the countdown banner disappears.
+  ///
+  /// Firebase writes:
+  ///   PATCH /bookings/{rentingId}  → { pickedUp: true }
+  ///   PATCH /users/{userId}        → { activeBike: null }
+  @override
+  Future<void> confirmPickup({
+    required String rentingId,
+    required String userId,
+  }) async {
+    // ── Step 1: Mark booking as picked up ──────────────────────────────────
+    final bookingUri = FirebaseConfig.baseUri.replace(
+      path: '/bookings/$rentingId.json',
+    );
+
+    final bookingResponse = await http.patch(
+      bookingUri,
+      body: json.encode({'pickedUp': true}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (bookingResponse.statusCode != 200) {
+      throw Exception(
+        'Failed to confirm pickup (${bookingResponse.statusCode})',
+      );
+    }
+
+    // ── Step 2: Clear activeBike reservation on user ───────────────────────
+    // Setting activeBike to null removes the countdown banner. The bike is
+    // now tracked via the booking record (isActive: true, pickedUp: true).
+    final userUri = FirebaseConfig.baseUri.replace(path: '/users/$userId.json');
+
+    final userResponse = await http.patch(
+      userUri,
+      body: json.encode({'activeBike': null}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (userResponse.statusCode != 200) {
+      throw Exception(
+        'Pickup confirmed but failed to clear user reservation (${userResponse.statusCode})',
+      );
+    }
   }
 }

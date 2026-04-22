@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../../../model/bike.dart';
 import '../../../../model/pass.dart';
+import '../../../../model/renting.dart';
 import '../../../../model/station.dart';
 import '../../../../model/user.dart';
 import '../../../../data/repositories/rentingRepository/renting_repository.dart';
@@ -36,7 +37,7 @@ class RentingViewModel extends ChangeNotifier {
     _initializeUser();
   }
 
-  // ── Getters ──────────────────────────────────────────────────────────────────
+  // ── Getters ──────────────────────────────────────────────────────────────
 
   bool get hasActiveBike => _user.activeBike != null;
   String? get activeBikeId => _user.activeBike?.id;
@@ -57,7 +58,7 @@ class RentingViewModel extends ChangeNotifier {
   String? get activePassEndDate =>
       _user.activePass?.endDate.toString().split(' ')[0];
 
-  // ── Init ─────────────────────────────────────────────────────────────────────
+  // ── Init ─────────────────────────────────────────────────────────────────
 
   Future<void> _initializeUser() async {
     try {
@@ -75,14 +76,11 @@ class RentingViewModel extends ChangeNotifier {
     }
   }
 
-  // ── Renting ──────────────────────────────────────────────────────────────────
+  // ── Renting ──────────────────────────────────────────────────────────────
 
-  /// Single call that:
-  ///   1. Creates booking in Firebase
-  ///   2. Stores full activeBike object on user node (preserves batteryLevel)
-  ///   3. Nulls out the station slot
-  ///   4. Updates local user state
-  Future<void> confirmRenting() async {
+  /// Creates the renting in Firebase and returns the [Renting] object
+  /// so callers can immediately update the shared MapViewModel.
+  Future<Renting> confirmRenting() async {
     if (_station == null) {
       throw Exception('No station selected for bike renting');
     }
@@ -102,24 +100,25 @@ class RentingViewModel extends ChangeNotifier {
       slotIndex = entry.key;
     }
 
-    // Pass full Bike so Firebase stores batteryLevel alongside id
-    await _rentingRepository.createRenting(
+    final renting = await _rentingRepository.createRenting(
       userId: _user.id,
       bike: bike,
       stationId: _station.id,
       slotIndex: slotIndex,
     );
 
-    // Reflect change locally immediately
+    // Reflect change locally
     _user = User(id: _user.id, activePass: _user.activePass, activeBike: bike);
     notifyListeners();
 
     debugPrint(
       'Renting confirmed — station: ${_station.name}, bike: ${bike.id}, slot: $slotIndex',
     );
+
+    return renting;
   }
 
-  // ── Pass / Ticket ────────────────────────────────────────────────────────────
+  // ── Pass / Ticket ────────────────────────────────────────────────────────
 
   Future<void> buyAndSetPass(Pass passSelected) async {
     try {

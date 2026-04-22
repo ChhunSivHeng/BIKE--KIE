@@ -12,8 +12,8 @@ import 'station_marker.dart';
 import 'station_details_sheet.dart';
 import 'search_results_sheet.dart';
 import 'filter_dialog.dart';
+import 'pickup_countdown_dialog.dart';
 
-/// Map screen main content - minimal and focused
 class MapContent extends StatelessWidget {
   const MapContent({super.key});
 
@@ -175,10 +175,12 @@ class _MapViewState extends State<_MapView> {
 
         final data = vm.data.data ?? [];
         final markers = _buildStationMarkers(data);
+
         return Scaffold(
           backgroundColor: Colors.white,
           body: Stack(
             children: [
+              // Map
               Positioned.fill(
                 child: FlutterMap(
                   mapController: _mapController,
@@ -200,6 +202,8 @@ class _MapViewState extends State<_MapView> {
                   ],
                 ),
               ),
+
+              // Search bar
               Positioned(
                 top: 16,
                 left: 12,
@@ -221,6 +225,58 @@ class _MapViewState extends State<_MapView> {
                   ),
                 ),
               ),
+
+              // Pickup countdown banner — shown when user has reserved bike
+              if (vm.hasPendingPickup)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SafeArea(
+                    top: false,
+                    child: Pick(
+                      stationName:
+                          vm.pickupStation?.name ??
+                          'Station ${vm.activeRenting!.stationId}',
+                      expiryTime: vm.activeRenting!.expiryTime,
+                      onConfirmPickup: () => vm.confirmPickup(),
+                      onExpired: () async {
+                        await vm.cancelPickup();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                '⏰ Pickup time expired. Bike released.',
+                              ),
+                              backgroundColor: Colors.red.shade600,
+                              behavior: SnackBarBehavior.floating,
+                              margin: const EdgeInsets.fromLTRB(12, 0, 12, 80),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      onCancel: () async {
+                        await vm.cancelPickup();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Reservation cancelled.'),
+                              backgroundColor: AppColors.gray600,
+                              behavior: SnackBarBehavior.floating,
+                              margin: const EdgeInsets.fromLTRB(12, 0, 12, 80),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
             ],
           ),
         );
