@@ -2,54 +2,90 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../dtos/bike_dto.dart';
 import '../../dtos/renting_dto.dart';
 import '../../firebase/firebase_database.dart';
+import '../stationRepository/station_repository.dart';
+import '../../../model/bike.dart';
 import '../../../model/renting.dart';
 import 'renting_repository.dart';
 
-/// Firebase implementation of BookingRepository.
-///
-/// This repository uses Firebase Realtime Database REST endpoints
-/// and keeps repository details separate from the view model.
 class RentingRepositoryFirebase implements RentingRepository {
+  final StationRepository _stationRepository;
+
+  RentingRepositoryFirebase({required StationRepository stationRepository})
+    : _stationRepository = stationRepository;
+
+  /// Confirms a rent in 3 steps:
+  ///   1. POST  /bookings              → create renting record
+  ///   2. PATCH /users/{userId}        → store full activeBike object
+  ///   3. PUT   /stations/{id}/availableBikes/{slotIndex} → null (remove bike)
   @override
   Future<Renting> createRenting({
-    required String bikeId,
+    required String userId,
+    required Bike bike, // full object so batteryLevel is stored on user
     required String stationId,
+    required int slotIndex,
   }) async {
+    // ── Step 1: Create booking record ─────────────────────────────────────────
     final renting = Renting(
       id: '',
-      bikeId: bikeId,
+      bikeId: bike.id,
       stationId: stationId,
       rentingTime: DateTime.now(),
       expiryTime: DateTime.now().add(const Duration(minutes: 15)),
       isActive: true,
     );
-    final uri = FirebaseConfig.baseUri.replace(path: '/bookings.json');
-    print("WOW: ${json.encode(RentingDto.toJson(renting))}");
-    final response = await http.post(
-      uri,
+
+    final bookingUri = FirebaseConfig.baseUri.replace(path: '/bookings.json');
+
+    final bookingResponse = await http.post(
+      bookingUri,
       body: json.encode(RentingDto.toJson(renting)),
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> body = json.decode(response.body);
-      final id = body['name'] as String?;
-      if (id == null) {
-        throw Exception('Firebase did not return booking id');
-      }
-      return Renting(
-        id: id,
-        bikeId: renting.bikeId,
-        stationId: renting.stationId,
-        rentingTime: renting.rentingTime,
-        expiryTime: renting.expiryTime,
-        isActive: renting.isActive,
+    if (bookingResponse.statusCode != 200) {
+      throw Exception(
+        'Failed to create booking (${bookingResponse.statusCode})',
       );
     }
 
-    throw Exception('Failed to create booking (${response.statusCode})');
+    final Map<String, dynamic> bookingBody =
+        json.decode(bookingResponse.body) as Map<String, dynamic>;
+    final String? rentingId = bookingBody['name'] as String?;
+    if (rentingId == null) {
+      throw Exception('Firebase did not return a booking id');
+    }
+
+    // ── Step 2: Assign full bike object to user ───────────────────────────────
+    // Stored as { "activeBike": { "id": "...", "batteryLevel": 75 } }
+    // so UserDto.fromJson can reconstruct the Bike model with batteryLevel.
+    final userUri = FirebaseConfig.baseUri.replace(path: '/users/$userId.json');
+
+    final userResponse = await http.patch(
+      userUri,
+      body: json.encode({'activeBike': BikeDto.fromModel(bike).toUserJson()}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (userResponse.statusCode != 200) {
+      throw Exception(
+        'Booking created but failed to assign bike to user (${userResponse.statusCode})',
+      );
+    }
+
+    // ── Step 3: Remove bike from station slot ─────────────────────────────────
+    await _stationRepository.removeBikeFromStation(stationId, slotIndex);
+
+    return Renting(
+      id: rentingId,
+      bikeId: renting.bikeId,
+      stationId: renting.stationId,
+      rentingTime: renting.rentingTime,
+      expiryTime: renting.expiryTime,
+      isActive: renting.isActive,
+    );
   }
 
   @override
@@ -63,9 +99,7 @@ class RentingRepositoryFirebase implements RentingRepository {
 
     final Map<String, dynamic>? body =
         json.decode(response.body) as Map<String, dynamic>?;
-    if (body == null) {
-      return [];
-    }
+    if (body == null) return [];
 
     return body.entries
         .map(

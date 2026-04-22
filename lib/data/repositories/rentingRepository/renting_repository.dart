@@ -1,30 +1,19 @@
+import '../../../model/bike.dart';
 import '../../../model/renting.dart';
 
-/// Abstract interface for booking data access
-///
-/// Allows:
-/// - Swapping implementations (Firebase, Firestore, REST)
-/// - Decoupling business logic from data source
-/// - Easy testing through dependency injection
-///
-/// Implementation: BookingRepositoryFirebase (Firebase Realtime Database)
-///
-/// Provided by: main_dev.dart via Provider<BookingRepository>
 abstract class RentingRepository {
-  /// Create a new booking record in Firebase
+  /// Creates a renting record, removes the bike from the station slot,
+  /// and assigns the bike to the user — all in one call.
   ///
-  /// Endpoint: POST /bookings.json
-  /// Returns: Booking object with generated ID from Firebase
-  /// Throws: Exception if Firebase request fails
+  /// [bike]      full Bike object (id + batteryLevel) so Firebase can store
+  ///             the complete activeBike on the user node.
+  /// [slotIndex] index inside station.availableBikes[] to null out.
   Future<Renting> createRenting({
-    required String bikeId,
+    required String userId,
+    required Bike bike,
     required String stationId,
+    required int slotIndex,
   });
 
-  /// Fetch all bookings from Firebase
-  ///
-  /// Endpoint: GET /bookings.json
-  /// Returns: List of all booking records
-  /// Returns: Empty list if no bookings exist
   Future<List<Renting>> getRentings();
 }

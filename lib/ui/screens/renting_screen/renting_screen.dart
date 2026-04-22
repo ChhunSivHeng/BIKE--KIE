@@ -1,3 +1,5 @@
+import 'package:bikkie/data/repositories/stationRepository/station_repository.dart';
+import 'package:bikkie/model/bike.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +24,15 @@ import 'widgets/renting_content.dart';
 /// - BookingViewModel loads current user from Firebase on initialization
 class RentingScreen extends StatelessWidget {
   final Station? station;
+  final Bike? selectedBike;
+  final int? selectedSlotIndex;
 
-  const RentingScreen({super.key, this.station});
+  const RentingScreen({
+    super.key,
+    this.station,
+    this.selectedBike,
+    this.selectedSlotIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +42,7 @@ class RentingScreen extends StatelessWidget {
         rentingRepository: context.read<RentingRepository>(),
         userRepository: context.read<UserRepository>(),
         passRepository: context.read<PassRepository>(),
+        // stationRepository: context.read<StationRepository>(),
       ),
       child: const RentingContent(),
     );

@@ -28,4 +28,19 @@ class StationRepositoryFirebase implements StationRepository {
       throw Exception('Fail to load stations');
     }
   }
+
+  @override
+  Future<void> removeBikeFromStation(String stationId, int slotIndex) async {
+    final url = FirebaseConfig.baseUri.replace(path: "/stations/$stationId/availableBikes/$slotIndex.json");
+
+    final response = await http.put(
+      url,
+      body: 'null',
+      headers: {'Content-Type': 'application/json'}
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to remove bike from station');
+    }
+  }
 }

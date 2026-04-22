@@ -6,39 +6,44 @@ import '../view_model/renting_model.dart';
 import '../widgets/payment_dialog.dart';
 import '../../success_screen/success_screen.dart';
 
-/// Action handlers for booking screen user interactions
-///
-/// Handles:
-/// - Confirm booking: Firebase call → navigate to success
-/// - Browse passes: Navigate to passes screen
-/// - Buy ticket: Show payment dialog → create ticket in Firebase
 class RentingActions {
-  /// Confirm booking with Firebase
+  /// Confirm renting with Firebase.
   ///
-  /// Flow:
-  /// 1. Call viewModel.confirmBooking() (awaits Firebase)
-  /// 2. Call onSuccess() callback for UI update
-  /// 3. Navigate to SuccessScreen
+  /// Shows a loading indicator, then navigates to SuccessScreen.
+  /// Any error is shown as a SnackBar — previously there was no try/catch
+  /// so a failed network call would crash the app silently.
   static Future<void> handleConfirmRenting(
     BuildContext context,
     RentingViewModel viewModel,
     VoidCallback onSuccess,
   ) async {
-    await viewModel.confirmRenting();
-    onSuccess();
+    try {
+      await viewModel.confirmRenting();
+      onSuccess();
 
-    if (!context.mounted) return;
+      if (!context.mounted) return;
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SuccessScreen()),
-    );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SuccessScreen()),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Renting failed: $e'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
   }
 
-  /// Navigate to passes browsing screen
-  ///
-  /// After user purchases a pass, captures the returned User data
-  /// and updates the BookingViewModel to show the confirm booking screen
+  /// Navigate to passes screen.
+  /// If the user purchases a pass, captures the returned User and updates
+  /// the ViewModel so the confirm button appears.
   static void handleBrowsePasses(
     BuildContext context,
     RentingViewModel viewModel,
@@ -50,7 +55,6 @@ class RentingActions {
         builder: (context) => Scaffold(appBar: AppBar(), body: PassScreen()),
       ),
     ).then((result) {
-      // If user purchased a pass, result will be the updated User
       if (result is User && context.mounted) {
         viewModel.updateUserWithPass(result);
       }
@@ -58,14 +62,7 @@ class RentingActions {
     });
   }
 
-  /// Show payment dialog for single ticket purchase with Firebase integration
-  ///
-  /// Flow:
-  /// 1. Show payment dialog with confirmation
-  /// 2. User clicks Confirm → ProcessPayment shows steps
-  /// 3. onConfirm callback: Creates ticket in Firebase via viewModel.buySingleTicket()
-  /// 4. Dialog closes automatically on success
-  /// 5. BookingViewModel state is automatically updated with new ticket pass
+  /// Show payment dialog for single ticket purchase.
   static void handleBuyTicket(BuildContext context, VoidCallback onSuccess) {
     final viewModel = context.read<RentingViewModel>();
     showDialog(
@@ -73,7 +70,6 @@ class RentingActions {
       builder: (dialogContext) => PaymentDialog(
         onConfirm: () async {
           try {
-            // Create ticket in Firebase and set as active pass
             await viewModel.buySingleTicket();
             onSuccess();
           } catch (e) {

@@ -10,7 +10,6 @@ import '../../../widgets/station_info_card.dart';
 import '../state/renting_content_state.dart';
 import '../view_model/renting_model.dart';
 
-/// Booking screen text constants
 class _RentingTexts {
   static const String screenTitle = 'Stations Details';
   static const String headerTitleConfirm = 'Confirm Your Renting';
@@ -18,20 +17,11 @@ class _RentingTexts {
       'Ready for your ride across Toulouse?';
   static const String headerTitleNoPass = 'Get a Pass to Rent';
   static const String headerSubtitleNoPass = 'Choose how you want to ride';
+  static const String headerTitleHasBike = 'Bike Assigned!';
+  static const String headerSubtitleHasBike =
+      'Your bike is ready for your ride';
 }
 
-/// Booking confirmation screen content
-///
-/// Displays:
-/// 1. Station map preview
-/// 2. Station details (name, bikes available)
-/// 3. Pass status (active pass or "no pass" warning)
-/// 4. Action buttons (Confirm / Browse Passes / Buy Ticket)
-///
-/// State management:
-/// - Watches BookingViewModel for user state changes
-/// - Uses BookingContentStateMixin for animation & action handlers
-/// - Responds to user interactions (confirm, browse, buy ticket)
 class RentingContent extends StatefulWidget {
   const RentingContent({super.key});
 
@@ -76,12 +66,27 @@ class _RentingContentState extends State<RentingContent>
 
   Widget _buildContent(RentingViewModel vm, ThemeData theme) {
     final station = vm.station;
-
     if (station == null) {
       return const Center(child: Text('No station selected'));
     }
 
     final hasPass = vm.hasActivePass;
+    final hasBike = vm.hasActiveBike;
+
+    // ── Header: check hasBike FIRST ───────────────────────────────────────────
+    // Previously hasPass was checked first, so after confirming the renting
+    // (hasBike=true, hasPass=true) it still showed "Confirm Your Renting".
+    final headerTitle = hasBike
+        ? _RentingTexts.headerTitleHasBike
+        : hasPass
+        ? _RentingTexts.headerTitleConfirm
+        : _RentingTexts.headerTitleNoPass;
+
+    final headerSubtitle = hasBike
+        ? _RentingTexts.headerSubtitleHasBike
+        : hasPass
+        ? _RentingTexts.headerSubtitleConfirm
+        : _RentingTexts.headerSubtitleNoPass;
 
     return FadeTransition(
       opacity: fadeAnimation,
@@ -92,12 +97,8 @@ class _RentingContentState extends State<RentingContent>
             Padding(
               padding: const EdgeInsets.all(16),
               child: RentingHeader(
-                title: hasPass
-                    ? _RentingTexts.headerTitleConfirm
-                    : _RentingTexts.headerTitleNoPass,
-                subtitle: hasPass
-                    ? _RentingTexts.headerSubtitleConfirm
-                    : _RentingTexts.headerSubtitleNoPass,
+                title: headerTitle,
+                subtitle: headerSubtitle,
               ),
             ),
             const SizedBox(height: 8),
@@ -112,6 +113,9 @@ class _RentingContentState extends State<RentingContent>
             ),
             const SizedBox(height: 20),
             _buildPassSection(vm),
+            const SizedBox(height: 16),
+            // Previously _buildBikeSection was defined but never called
+            _buildBikeSection(vm),
             const SizedBox(height: 24),
             _buildActionSection(vm),
             const SizedBox(height: 16),
@@ -165,7 +169,54 @@ class _RentingContentState extends State<RentingContent>
     );
   }
 
+  /// Shows the assigned bike details after confirming.
+  /// Was defined in the original but never added to the column — fixed.
+  Widget _buildBikeSection(RentingViewModel vm) {
+    if (!vm.hasActiveBike) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ASSIGNED BIKE',
+            style: TextStyle(
+              color: AppColors.gray600,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          PassInfoCard(
+            passType: 'Bike ID: ${vm.activeBikeId}',
+            details: [
+              PassDetailItem(
+                label: 'Battery Level',
+                value: vm.activeBikeRange != null
+                    ? '${vm.activeBikeRange}%'
+                    : 'N/A (Mechanical)',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildActionSection(RentingViewModel vm) {
+    if (vm.hasActiveBike) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: AppButton(
+          label: 'START RIDE',
+          onPressed: null,
+          height: 52,
+          borderRadius: 12,
+        ),
+      );
+    }
     return vm.hasActivePass
         ? _buildConfirmButton()
         : _buildPassSelectionButtons();

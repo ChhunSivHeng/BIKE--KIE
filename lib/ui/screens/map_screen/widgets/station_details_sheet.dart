@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../model/bike.dart';
 import '../../../../model/station.dart';
 import '../../renting_screen/renting_screen.dart';
 import '../view_model/station_details_model.dart';
@@ -46,12 +47,20 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
     super.dispose();
   }
 
-  void _handleRentBike() {
-    // Navigate to booking screen with the current station
+  /// Navigate to RentingScreen.
+  ///
+  /// [selectedBike] and [selectedSlotIndex] are set when the user taps
+  /// a specific bike card — otherwise the renting screen picks the first
+  /// available bike automatically.
+  void _handleRentBike({Bike? selectedBike, int? selectedSlotIndex}) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RentingScreen(station: _viewModel.currentStation),
+        builder: (context) => RentingScreen(
+          station: _viewModel.currentStation,
+          selectedBike: selectedBike,
+          selectedSlotIndex: selectedSlotIndex,
+        ),
       ),
     );
   }
@@ -64,14 +73,17 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
       isLowAvailability: vm.isLowAvailability,
     ),
     const SizedBox(height: 24),
+    // Each bike card passes its own bike + slotIndex
     AvailableBikesSection(
       station: vm.currentStation,
-      onRentBike: _handleRentBike,
+      onRentBike: (bike, slotIndex) =>
+          _handleRentBike(selectedBike: bike, selectedSlotIndex: slotIndex),
     ),
     const SizedBox(height: 20),
+    // Bottom button rents any available bike (no specific selection)
     RentingActionButton(
       hasAvailableBikes: vm.hasAvailableBikes,
-      onRent: _handleRentBike,
+      onRent: () => _handleRentBike(),
     ),
     const SizedBox(height: 24),
     if (vm.getNearbyStations().isNotEmpty)

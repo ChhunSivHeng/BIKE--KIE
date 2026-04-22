@@ -1,3 +1,4 @@
+import '../../../model/bike.dart';
 import '../../../model/pass.dart';
 import '../../../model/user.dart';
 
@@ -11,4 +12,8 @@ abstract class UserRepository {
 
   /// Set active pass for current user in Firebase
   Future<User> setActivePass(Pass? pass);
+
+  /// Set active bike for current user in Firebase
+  /// Pass null to clear the active bike (when returning)
+  Future<User> setActiveBike(Bike? bike);
 }

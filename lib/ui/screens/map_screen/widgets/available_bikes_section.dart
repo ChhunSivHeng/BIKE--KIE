@@ -4,10 +4,15 @@ import '../../../../model/station.dart';
 import '../../../../utils/animations_util.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable widget for available bikes section with smooth entrance animations
+/// Reusable widget for available bikes section with smooth entrance animations.
+///
+/// [onRentBike] now receives the tapped [Bike] and its [slotIndex] so the
+/// caller can forward the exact bike to RentingScreen.
 class AvailableBikesSection extends StatefulWidget {
   final Station station;
-  final VoidCallback? onRentBike;
+
+  /// Called with (bike, slotIndex) when user taps Rent on a specific card.
+  final void Function(Bike bike, int slotIndex)? onRentBike;
 
   const AvailableBikesSection({
     super.key,
@@ -50,7 +55,6 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Principle 1: Visibility - Real-time indicator
           Row(
             children: [
               const Icon(Icons.update, color: AppColors.primary, size: 18),
@@ -67,7 +71,6 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
             ],
           ),
           const SizedBox(height: 12),
-          // Principle 6: Recognition rather than recall - Show only available bikes
           if (bikes.isNotEmpty)
             ListView.builder(
               shrinkWrap: true,
@@ -81,9 +84,13 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _AnimatedBikeSlotCard(
                     slotNumber: slotIndex + 1,
-                    onRent: widget.onRentBike,
-                    animationDelay: index * 50,
                     bike: bike,
+                    animationDelay: index * 50,
+                    // Wrap with the specific bike + slot so the parent knows
+                    // exactly which one was tapped
+                    onRent: widget.onRentBike != null
+                        ? () => widget.onRentBike!(bike, slotIndex)
+                        : null,
                   ),
                 );
               },
@@ -103,7 +110,6 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
               ),
             ),
           const SizedBox(height: 16),
-          // Principle 9: Help & Documentation
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -134,7 +140,8 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
   }
 }
 
-/// Animated bike slot card component
+// ── Internal animated card ────────────────────────────────────────────────────
+
 class _AnimatedBikeSlotCard extends StatefulWidget {
   final int slotNumber;
   final Bike bike;
@@ -143,9 +150,9 @@ class _AnimatedBikeSlotCard extends StatefulWidget {
 
   const _AnimatedBikeSlotCard({
     required this.slotNumber,
+    required this.bike,
     this.onRent,
     this.animationDelay = 0,
-    required this.bike,
   });
 
   @override
@@ -168,11 +175,8 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
     _fadeAnimation = AnimationUtils.createFadeAnimation(_controller);
     _slideAnimation = AnimationUtils.createSlideAnimation(_controller);
 
-    // Stagger animation based on index
     Future.delayed(Duration(milliseconds: widget.animationDelay), () {
-      if (mounted) {
-        _controller.forward();
-      }
+      if (mounted) _controller.forward();
     });
   }
 
@@ -184,6 +188,8 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
 
   @override
   Widget build(BuildContext context) {
+    final bool isElectric = widget.bike.batteryLevel != null;
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SlideTransition(
@@ -204,42 +210,28 @@ class _AnimatedBikeSlotCardState extends State<_AnimatedBikeSlotCard>
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: widget.bike.batteryLevel != null
-                    ? Icon(
-                        Icons.electric_bike,
-                        color: AppColors.success,
-                        size: 20,
-                      )
-                    : Icon(
-                        Icons.pedal_bike,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
+                child: Icon(
+                  isElectric ? Icons.electric_bike : Icons.pedal_bike,
+                  color: isElectric ? AppColors.success : AppColors.primary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.bike.batteryLevel != null
-                        ? Text(
-                            'Electric Bike | Battery Level: ${widget.bike.batteryLevel}%',
-                            style: TextStyle(
-                              color: AppColors.success,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.1,
-                            ),
-                          )
-                        : Text(
-                            'Mechanical Bike',
-                            style: TextStyle(
-                              color: AppColors.black,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
+                    Text(
+                      isElectric
+                          ? 'Electric Bike | Battery: ${widget.bike.batteryLevel}%'
+                          : 'Mechanical Bike',
+                      style: TextStyle(
+                        color: isElectric ? AppColors.success : AppColors.black,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
                     Text(
                       'Slot #${widget.slotNumber}',
                       style: const TextStyle(

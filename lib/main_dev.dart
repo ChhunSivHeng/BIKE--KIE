@@ -14,7 +14,11 @@ List<InheritedProvider> get devProviders {
   return [
     ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
     Provider<StationRepository>(create: (_) => StationRepositoryFirebase()),
-    Provider<RentingRepository>(create: (_) => RentingRepositoryFirebase()),
+    Provider<RentingRepository>(
+      create: (context) => RentingRepositoryFirebase(
+        stationRepository: context.read<StationRepository>(),
+      ),
+    ),
     Provider<PassRepository>(create: (_) => PassRepositoryFirebase()),
     Provider<UserRepository>(
       create: (context) =>
