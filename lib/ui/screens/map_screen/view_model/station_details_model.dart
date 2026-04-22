@@ -10,7 +10,6 @@ class StationDetailsViewModel extends ChangeNotifier {
   final void Function({Bike? selectedBike, int? selectedSlotIndex})
   _onRentRequested;
 
-  // Getters
   Station get currentStation => _currentStation;
   bool get isFavorite => _isFavorite;
   List<Station> get allStations => _allStations;
@@ -28,20 +27,17 @@ class StationDetailsViewModel extends ChangeNotifier {
        _onStationChanged = onStationChanged,
        _onRentRequested = onRentRequested;
 
-  /// Switch to a different station
   void switchStation(Station station) {
     _currentStation = station;
     _onStationChanged(station);
     notifyListeners();
   }
 
-  /// Toggle favorite status
   void toggleFavorite() {
     _isFavorite = !_isFavorite;
     notifyListeners();
   }
 
-  /// Handle bike renting action intent.
   void handleRentBike({Bike? selectedBike, int? selectedSlotIndex}) {
     if (!hasAvailableBikes) return;
     _onRentRequested(
@@ -50,7 +46,6 @@ class StationDetailsViewModel extends ChangeNotifier {
     );
   }
 
-  /// Rent a specific bike selected by user.
   void rentSelectedBike({required Bike bike, required int slotIndex}) {
     handleRentBike(
       selectedBike: bike,
@@ -58,7 +53,6 @@ class StationDetailsViewModel extends ChangeNotifier {
     );
   }
 
-  /// Get nearby stations (exclude current station)
   List<Station> getNearbyStations() {
     return _allStations.where((s) => s.id != _currentStation.id).toList();
   }

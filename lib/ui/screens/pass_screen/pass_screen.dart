@@ -6,13 +6,6 @@ import '../../../data/repositories/userRepository/user_repository.dart';
 import 'view_model/pass_model.dart';
 import 'widgets/pass_content.dart';
 
-/// Pass browsing and purchase screen
-///
-/// Displays all available passes and allows users to select and purchase them.
-/// Persists purchases to Firebase via UserRepository.
-/// Returns with updated user data after successful purchase.
-///
-/// Requires PassRepository and UserRepository to be provided via global Provider.
 class PassScreen extends StatelessWidget {
   const PassScreen({super.key});
 

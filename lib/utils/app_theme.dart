@@ -159,7 +159,6 @@ class AppTheme {
         letterSpacing: 0.3,
       ),
     ),
-    // Elevated Button - Primary Red
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
@@ -177,7 +176,6 @@ class AppTheme {
         surfaceTintColor: AppColors.primary,
       ),
     ),
-    // Outlined Button
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
@@ -193,7 +191,6 @@ class AppTheme {
         ),
       ),
     ),
-    // Text Button
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: AppColors.primary,
@@ -205,7 +202,6 @@ class AppTheme {
         ),
       ),
     ),
-    // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.gray50,
@@ -244,7 +240,6 @@ class AppTheme {
         fontWeight: FontWeight.w500,
       ),
     ),
-    // Slider Theme
     sliderTheme: SliderThemeData(
       activeTrackColor: AppColors.primary,
       inactiveTrackColor: AppColors.gray200,
@@ -262,7 +257,6 @@ class AppTheme {
         fontWeight: FontWeight.w700,
       ),
     ),
-    // Card Theme
     cardTheme: CardThemeData(
       color: AppColors.white,
       elevation: 0,
@@ -273,7 +267,6 @@ class AppTheme {
       margin: const EdgeInsets.all(0),
       surfaceTintColor: AppColors.primary,
     ),
-    // Checkbox Theme
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -285,20 +278,17 @@ class AppTheme {
         borderRadius: BorderRadius.circular(6),
       ),
     ),
-    // Divider Theme
     dividerTheme: const DividerThemeData(
       color: AppColors.gray200,
       thickness: 1,
       space: 16,
     ),
-    // Icon Theme
     iconTheme: const IconThemeData(
       color: AppColors.primary,
       size: 24,
     ),
   );
 
-  // Dark Theme
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
@@ -316,7 +306,6 @@ class AppTheme {
   );
 }
 
-/// Spacing constants for consistent layout
 class AppSpacing {
   static const double xs = 4;
   static const double sm = 8;
@@ -327,7 +316,6 @@ class AppSpacing {
   static const double xxxl = 48;
 }
 
-/// Border radius constants
 class AppRadius {
   static const double xs = 4;
   static const double sm = 8;
@@ -337,7 +325,6 @@ class AppRadius {
   static const double full = 9999;
 }
 
-/// Shadow constants for depth and elevation
 class AppShadows {
   static const List<BoxShadow> none = [];
 
@@ -357,7 +344,6 @@ class AppShadows {
     BoxShadow(color: Color(0x33000000), blurRadius: 20, offset: Offset(0, 8)),
   ];
 
-  /// Red-branded shadow for CTAs and important elements
   static List<BoxShadow> redGlow = [
     BoxShadow(
       color: AppColors.primary.withOpacity(0.3),
@@ -371,7 +357,6 @@ class AppShadows {
     ),
   ];
 
-  /// Subtle red shadow
   static List<BoxShadow> redSubtle = [
     BoxShadow(
       color: AppColors.primary.withOpacity(0.1),
@@ -381,7 +366,6 @@ class AppShadows {
   ];
 }
 
-/// Button styles constants
 class AppButtonStyles {
   static final ButtonStyle pillStyle = ElevatedButton.styleFrom(
     shape: const StadiumBorder(),

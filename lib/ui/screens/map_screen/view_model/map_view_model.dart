@@ -18,7 +18,6 @@ class MapViewModel extends ChangeNotifier {
     loadUser();
   }
 
-  // ── Stations ──────────────────────────────────────────────────────────────
   AsyncValue<List<Station>> _state = AsyncValue<List<Station>>.loading();
   AsyncValue<List<Station>> get data => _state;
 
@@ -43,7 +42,6 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── User / Active Renting ─────────────────────────────────────────────────
   User? _user;
   Renting? _activeRenting;
 
@@ -89,14 +87,12 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
-  /// Call this immediately after confirmRenting() succeeds.
   void refreshAfterRenting(Renting renting, User updatedUser) {
     _activeRenting = renting;
     _user = updatedUser;
     notifyListeners();
   }
 
-  /// Called when the pickup countdown expires — clears reservation silently.
   Future<void> cancelPickup() async {
     try {
       await _userRepo.setActiveBike(null);
@@ -108,9 +104,6 @@ class MapViewModel extends ChangeNotifier {
     }
   }
 
-  /// Called when user taps "I've Arrived" → "Unlock Bike".
-  /// Marks the booking as picked up in Firebase and clears the banner.
-  /// Returns true on success, false on error (so the UI can show a snackbar).
   Future<bool> confirmPickup() async {
     final renting = _activeRenting;
     final userId = _user?.id;
@@ -123,7 +116,6 @@ class MapViewModel extends ChangeNotifier {
     try {
       await _rentingRepo.confirmPickup(rentingId: renting.id, userId: userId);
 
-      // Clear local state — banner disappears, pickup is done
       _activeRenting = null;
       _user = await _userRepo.getCurrentUser();
       notifyListeners();

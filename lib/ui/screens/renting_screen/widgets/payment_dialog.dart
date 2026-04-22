@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 import 'ticket_detail_row.dart';
 
-/// Payment confirmation dialog for buying single tickets
-///
-/// Flow:
-/// 1. Show ticket details (1-hour duration, $5.00 price)
-/// 2. User clicks Confirm → triggers payment processing
-/// 3. Show processing steps: Validating → Processing → Confirming
-/// 4. After completion, dismiss dialog automatically
 class PaymentDialog extends StatefulWidget {
   final Future<void> Function() onConfirm;
   final VoidCallback onCancel;
@@ -64,7 +57,6 @@ class _PaymentDialogState extends State<PaymentDialog>
     super.dispose();
   }
 
-  /// Process payment with animated steps
   Future<void> _processPayment() async {
     setState(() {
       _isProcessing = true;
@@ -72,7 +64,6 @@ class _PaymentDialogState extends State<PaymentDialog>
     });
 
     try {
-      // Simulate each payment processing step
       for (int i = 0; i < _paymentSteps.length; i++) {
         if (!mounted) return;
 
@@ -80,14 +71,11 @@ class _PaymentDialogState extends State<PaymentDialog>
           _processingStep = _paymentSteps[i];
         });
 
-        // Each step takes 400ms
         await Future.delayed(const Duration(milliseconds: 400));
       }
 
-      // Call the actual payment confirmation
       await widget.onConfirm();
 
-      // Show success state briefly
       if (mounted) {
         setState(() {
           _processingStep = '✓ Payment successful!';
@@ -161,7 +149,6 @@ class _PaymentDialogState extends State<PaymentDialog>
                   ),
                 ),
               ] else ...[
-                // Processing state
                 const SizedBox(height: 20),
                 Center(
                   child: Column(

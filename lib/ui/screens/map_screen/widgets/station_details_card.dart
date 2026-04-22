@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../model/station.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable widget for station details card (ID, name, status, location)
 class StationDetailsCard extends StatelessWidget {
   final Station station;
 

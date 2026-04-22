@@ -55,8 +55,6 @@ class _RentingContentState extends State<RentingContent>
     super.dispose();
   }
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-
   Future<void> _handleConfirmRenting() async {
     final vm = context.read<RentingViewModel>();
     try {
@@ -64,8 +62,6 @@ class _RentingContentState extends State<RentingContent>
 
       if (!mounted) return;
 
-      // Update the persistent MapViewModel immediately so the countdown
-      // banner is ready the moment we land back on the map.
       context.read<MapViewModel>().refreshAfterRenting(renting, vm.user);
 
       if (!mounted) return;
@@ -117,8 +113,6 @@ class _RentingContentState extends State<RentingContent>
   void _handleViewTimer() {
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +166,6 @@ class _RentingContentState extends State<RentingContent>
             ),
             const SizedBox(height: 8),
 
-            // Real map preview centred on the station
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: MapPreview(

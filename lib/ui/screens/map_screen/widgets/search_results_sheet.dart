@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../model/station.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Search results sheet - extracted from map_content for reusability
 class SearchResultsSheet extends StatefulWidget {
   final List<Station> allStations;
   final int minBikes;

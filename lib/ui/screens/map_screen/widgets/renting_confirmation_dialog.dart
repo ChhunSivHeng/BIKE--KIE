@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/animations_util.dart';
 
-/// Animated booking confirmation dialog with smooth scale and fade effects
 class RentingConfirmationDialog extends StatefulWidget {
   final String stationName;
   final VoidCallback onConfirm;
@@ -18,7 +17,6 @@ class RentingConfirmationDialog extends StatefulWidget {
   State<RentingConfirmationDialog> createState() =>
       _RentingConfirmationDialogState();
 
-  /// Static method to show the dialog
   static void show(
     BuildContext context, {
     required String stationName,
@@ -95,8 +93,6 @@ class _RentingConfirmationDialogState extends State<RentingConfirmationDialog>
     );
   }
 }
-
-/// Utility to show success snackbar with smooth animation
 void showRentingSuccessSnackBar(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

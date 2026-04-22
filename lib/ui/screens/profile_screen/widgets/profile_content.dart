@@ -8,12 +8,6 @@ import '../view_model/user_profile_view_model.dart';
 import 'pass_status_card.dart';
 import 'no_pass_card.dart';
 
-/// Profile screen content
-///
-/// Displays:
-/// 1. User header with name and email
-/// 2. Pass status (active pass or subscribe CTA)
-/// 3. Logout button
 class ProfileContent extends StatelessWidget {
   static const int _passPage = 0;
   final Function(int newTab) switchTab;
@@ -44,14 +38,12 @@ class ProfileContent extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // User Header
               AppAvatar(
                 name: viewModel.userDisplayName,
                 email: viewModel.userEmail,
               ),
               const SizedBox(height: 32),
 
-              // Pass Status Section
               Text(
                 'YOUR PASS STATUS',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -69,12 +61,11 @@ class ProfileContent extends StatelessWidget {
                 ),
               ] else ...[
                 NoPassCard(
-                  onSubscribe: () => switchTab(_passPage), // switch to page 0 which is tha pass browsing page
+                  onSubscribe: () => switchTab(_passPage),
                 ),
               ],
               const SizedBox(height: 32),
 
-              // Logout Button
               AppButton(
                 label: viewModel.isLoggingOut ? 'Logging out...' : 'Logout',
                 onPressed: () async {

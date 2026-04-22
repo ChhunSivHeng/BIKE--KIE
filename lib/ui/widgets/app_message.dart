@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// AppMessage - Minimal error/success message component
 class AppMessage extends StatelessWidget {
   final String message;
   final bool isError;

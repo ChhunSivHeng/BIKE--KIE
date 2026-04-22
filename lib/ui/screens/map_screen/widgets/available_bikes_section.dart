@@ -4,14 +4,9 @@ import '../../../../model/station.dart';
 import '../../../../utils/animations_util.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable widget for available bikes section with smooth entrance animations.
-///
-/// [onRentBike] now receives the tapped [Bike] and its [slotIndex] so the
-/// caller can forward the exact bike to RentingScreen.
 class AvailableBikesSection extends StatefulWidget {
   final Station station;
 
-  /// Called with (bike, slotIndex) when user taps Rent on a specific card.
   final void Function(Bike bike, int slotIndex)? onRentBike;
 
   const AvailableBikesSection({
@@ -86,8 +81,6 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
                     slotNumber: slotIndex + 1,
                     bike: bike,
                     animationDelay: index * 50,
-                    // Wrap with the specific bike + slot so the parent knows
-                    // exactly which one was tapped
                     onRent: widget.onRentBike != null
                         ? () => widget.onRentBike!(bike, slotIndex)
                         : null,
@@ -139,8 +132,6 @@ class _AvailableBikesSectionState extends State<AvailableBikesSection>
     );
   }
 }
-
-// ── Internal animated card ────────────────────────────────────────────────────
 
 class _AnimatedBikeSlotCard extends StatefulWidget {
   final int slotNumber;

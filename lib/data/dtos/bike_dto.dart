@@ -6,8 +6,6 @@ class BikeDto {
 
   BikeDto({required this.id, this.batteryLevel});
 
-  // ── Station bikes ─────────────────────────────────────────────────────────
-  // Format in Firebase: { "bikeId": batteryLevel } or { "bikeId": "n/a" }
 
   static Bike fromJson(dynamic json) {
     final entry = (json as Map<String, dynamic>).entries.first;
@@ -17,8 +15,6 @@ class BikeDto {
     );
   }
 
-  // ── User's activeBike ─────────────────────────────────────────────────────
-  // Format in Firebase: { "id": "bike123", "batteryLevel": 75 }
 
   factory BikeDto.fromUserJson(Map<String, dynamic> json) {
     return BikeDto(

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 
-/// LoginHeader Widget
-///
-/// Displays Bikkie logo and branding.
-/// UX Principle: Visibility - Clear app identity and welcome message
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
 
@@ -13,7 +9,6 @@ class LoginHeader extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          // Logo Circle
           Container(
             width: 80,
             height: 80,
@@ -30,7 +25,6 @@ class LoginHeader extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // App Name
           const Text(
             'Bikkie',
             style: TextStyle(
@@ -42,7 +36,6 @@ class LoginHeader extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Tagline
           const Text(
             'Your Urban Mobility Solution',
             style: TextStyle(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// AppCard - Minimal reusable card component
 class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;

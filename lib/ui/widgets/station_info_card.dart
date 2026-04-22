@@ -3,8 +3,6 @@ import '../../model/station.dart';
 import '../../utils/app_theme.dart';
 import 'location_badge.dart';
 
-/// Reusable station information card component
-/// Displays station name, location, and availability info
 class StationInfoCard extends StatelessWidget {
   final Station station;
   final String? locationText;

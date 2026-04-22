@@ -1,27 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// AppButton - Reusable button component with loading and customization support
-/// Minimal implementation with essential features only
-///
-/// Usage:
-/// ```dart
-/// // Basic usage
-/// AppButton(label: 'Login', onPressed: () => handleLogin())
-///
-/// // With loading state
-/// AppButton(label: 'Login', onPressed: () => handleLogin(), isLoading: isLoading)
-///
-/// // Outlined variant
-/// AppButton(label: 'Cancel', onPressed: () => cancel(), outlined: true)
-///
-/// // Custom colors
-/// AppButton(
-///   label: 'Subscribe',
-///   onPressed: () => subscribe(),
-///   backgroundColor: AppColors.success,
-/// )
-/// ```
 class AppButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

@@ -37,8 +37,6 @@ class RentingViewModel extends ChangeNotifier {
     _initializeUser();
   }
 
-  // ── Getters ──────────────────────────────────────────────────────────────
-
   bool get hasActiveBike => _user.activeBike != null;
   String? get activeBikeId => _user.activeBike?.id;
   int? get activeBikeRange => _user.activeBike?.batteryLevel;
@@ -58,8 +56,6 @@ class RentingViewModel extends ChangeNotifier {
   String? get activePassEndDate =>
       _user.activePass?.endDate.toString().split(' ')[0];
 
-  // ── Init ─────────────────────────────────────────────────────────────────
-
   Future<void> _initializeUser() async {
     try {
       _isLoadingUser = true;
@@ -76,10 +72,6 @@ class RentingViewModel extends ChangeNotifier {
     }
   }
 
-  // ── Renting ──────────────────────────────────────────────────────────────
-
-  /// Creates the renting in Firebase and returns the [Renting] object
-  /// so callers can immediately update the shared MapViewModel.
   Future<Renting> confirmRenting() async {
     if (_station == null) {
       throw Exception('No station selected for bike renting');
@@ -107,7 +99,6 @@ class RentingViewModel extends ChangeNotifier {
       slotIndex: slotIndex,
     );
 
-    // Reflect change locally
     _user = User(id: _user.id, activePass: _user.activePass, activeBike: bike);
     notifyListeners();
 
@@ -117,8 +108,6 @@ class RentingViewModel extends ChangeNotifier {
 
     return renting;
   }
-
-  // ── Pass / Ticket ────────────────────────────────────────────────────────
 
   Future<void> buyAndSetPass(Pass passSelected) async {
     try {

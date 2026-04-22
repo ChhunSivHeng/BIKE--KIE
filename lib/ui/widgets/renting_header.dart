@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// Reusable booking header component
-/// Displays title and subtitle based on booking state
 class RentingHeader extends StatelessWidget {
   final String title;
   final String subtitle;

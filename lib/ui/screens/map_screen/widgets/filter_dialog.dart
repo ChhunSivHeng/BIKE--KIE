@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Filter dialog - extracted from map_content for reusability
 class FilterDialog extends StatefulWidget {
   final int initialMinBikes;
   final bool initialShowOnlyAvailable;

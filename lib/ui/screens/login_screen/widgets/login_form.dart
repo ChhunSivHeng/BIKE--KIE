@@ -7,13 +7,6 @@ import '../../../widgets/app_input_field.dart';
 import '../../../widgets/app_message.dart';
 import 'login_header.dart';
 
-/// LoginForm Widget
-///
-/// Orchestrates login UI using ViewModel for state management.
-/// Separates concerns:
-/// - UI rendering: this widget
-/// - State & logic: LoginViewModel
-/// - Authentication: AuthService
 class LoginForm extends StatefulWidget {
   final AuthService authService;
   final LoginViewModel viewModel;
@@ -26,7 +19,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   late TextEditingController _userIdController;
-  
+
 
   @override
   void initState() {
@@ -42,9 +35,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void _handleLogin() async {
     final success = await widget.viewModel.login(_userIdController.text);
-    if (success && mounted) {
-      // AuthService state changed, UI will rebuild via Consumer
-    }
+    if (success && mounted) {}
   }
 
   @override
@@ -58,12 +49,10 @@ class _LoginFormState extends State<LoginForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-    
-              // ===== HEADER =====
+
               const LoginHeader(),
               const SizedBox(height: 48),
-    
-              // ===== INPUT FIELD =====
+
               AppInputField(
                 label: 'User ID',
                 controller: _userIdController,
@@ -79,8 +68,7 @@ class _LoginFormState extends State<LoginForm> {
                 },
               ),
               const SizedBox(height: 16),
-    
-              // ===== ERROR MESSAGE =====
+
               if (viewModel.hasError)
                 AppMessage(
                   message: viewModel.errorMessage ?? 'An error occurred',
@@ -88,8 +76,7 @@ class _LoginFormState extends State<LoginForm> {
                   onDismiss: viewModel.clearError,
                 ),
               const SizedBox(height: 24),
-    
-              // ===== LOGIN BUTTON =====
+
               AppButton(
                 label: 'Login',
                 onPressed: _handleLogin,

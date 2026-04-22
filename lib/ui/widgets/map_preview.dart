@@ -3,10 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../utils/app_theme.dart';
 
-/// Reusable map preview component.
-/// When [latitude] and [longitude] are provided it renders a real
-/// interactive FlutterMap tile layer centred on that location with a pin.
-/// Falls back to the old grey placeholder when no coordinates are given.
 class MapPreview extends StatelessWidget {
   final double height;
   final double borderRadius;
@@ -43,8 +39,6 @@ class MapPreview extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      // AbsorbPointer prevents the map from consuming scroll/drag when
-      // embedded in a ScrollView — it's view-only.
       child: AbsorbPointer(
         child: Stack(
           children: [
@@ -53,7 +47,7 @@ class MapPreview extends StatelessWidget {
                 initialCenter: center,
                 initialZoom: 16,
                 interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.none, // fully static preview
+                  flags: InteractiveFlag.none,
                 ),
               ),
               children: [
@@ -77,7 +71,6 @@ class MapPreview extends StatelessWidget {
               ],
             ),
 
-            // Optional badge
             if (badgeLabel != null)
               Positioned(
                 bottom: 10,
@@ -115,7 +108,6 @@ class MapPreview extends StatelessWidget {
   }
 }
 
-/// Red pin shown on the preview map at the station location.
 class _StationPin extends StatelessWidget {
   const _StationPin();
 
@@ -144,7 +136,6 @@ class _StationPin extends StatelessWidget {
             size: 18,
           ),
         ),
-        // Pin tail
         CustomPaint(size: const Size(10, 6), painter: _PinTailPainter()),
       ],
     );
@@ -154,13 +145,7 @@ class _StationPin extends StatelessWidget {
 class _PinTailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = AppColors.primary;
-    // final path = Path()
-    //   ..moveTo(0, 0)
-    //   ..lineTo(size.width / 2, size.height)
-    //   ..lineTo(size.width, 0)
-    //   ..close();
-    // canvas.drawPath(path, paint);
+    Paint()..color = AppColors.primary;
   }
 
   @override

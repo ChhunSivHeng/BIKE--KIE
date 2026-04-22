@@ -51,9 +51,6 @@ class BikeApp extends StatefulWidget {
 class _BikeAppState extends State<BikeApp> {
   int _currentIndex = 1;
 
-  // MapViewModel is created ONCE here and survives tab switches + navigation.
-  // This means when popUntil(isFirst) fires, the existing ViewModel is reused
-  // and hasPendingPickup is already true — the banner appears instantly.
   late final MapViewModel _mapViewModel;
 
   @override
@@ -84,7 +81,6 @@ class _BikeAppState extends State<BikeApp> {
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: IndexedStack(
-            // IndexedStack keeps all pages alive — no rebuild on tab switch.
             index: _currentIndex,
             children: [
               const PassScreen(),

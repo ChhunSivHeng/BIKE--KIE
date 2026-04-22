@@ -1,20 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../../../services/auth_service.dart';
 
-/// LoginViewModel
-///
-/// Manages all login-related state and business logic.
-/// Separates concerns: state management here, UI rendering in widgets.
-///
-/// State:
-/// - isLoading: Currently logging in
-/// - errorMessage: Error from last login attempt
-/// - isSuccess: Login completed successfully
-///
-/// Logic:
-/// - validateUserId(): Client-side validation
-/// - login(): Authenticate user with AuthService
-/// - clearError(): Dismiss error messages
 class LoginViewModel extends ChangeNotifier {
   final AuthService _authService;
 
@@ -22,7 +8,6 @@ class LoginViewModel extends ChangeNotifier {
   String? _errorMessage;
   bool _isSuccess = false;
 
-  // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isSuccess => _isSuccess;
@@ -31,8 +16,6 @@ class LoginViewModel extends ChangeNotifier {
   LoginViewModel({required AuthService authService})
     : _authService = authService;
 
-  /// Validate user ID format
-  /// Returns null if valid, error message if invalid
   String? validateUserId(String userId) {
     final trimmed = userId.trim();
 
@@ -48,11 +31,9 @@ class LoginViewModel extends ChangeNotifier {
       return 'User ID can only contain letters, numbers, and underscores';
     }
 
-    return null; // Valid
+    return null;
   }
 
-  /// Attempt login with provided user ID
-  /// Returns true if successful, false otherwise
   Future<bool> login(String userId) async {
     final validation = validateUserId(userId);
     if (validation != null) {
@@ -81,18 +62,15 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  /// Clear error message
   void clearError() {
     _clearError();
   }
 
-  /// Clear success flag
   void clearSuccess() {
     _isSuccess = false;
     notifyListeners();
   }
 
-  // Private helpers
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -108,5 +86,4 @@ class LoginViewModel extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
-
 }

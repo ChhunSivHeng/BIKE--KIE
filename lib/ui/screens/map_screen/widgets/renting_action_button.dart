@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../utils/animations_util.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Animated booking action button with smooth pulse and hover effects
 class RentingActionButton extends StatefulWidget {
   final bool hasAvailableBikes;
   final VoidCallback onRent;

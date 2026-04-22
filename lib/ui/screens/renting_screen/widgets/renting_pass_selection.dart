@@ -4,10 +4,6 @@ import '../../../../utils/app_theme.dart';
 import '../../../widgets/display/alert_card.dart';
 import '../../../widgets/pass_info_card.dart';
 
-/// Displays the user's active pass details, or an alert if they have none.
-///
-/// Accepts plain values — no ViewModel dependency — so it stays a pure
-/// presentational widget that is easy to test and reuse.
 class RentingPassSection extends StatelessWidget {
   final bool hasActivePass;
   final String? passType;

@@ -74,14 +74,12 @@ class _StationDetailsSheetState extends State<StationDetailsSheet> {
       isLowAvailability: vm.isLowAvailability,
     ),
     const SizedBox(height: 24),
-    // Each bike card passes its own bike + slotIndex
     AvailableBikesSection(
       station: vm.currentStation,
       onRentBike: (bike, slotIndex) =>
           vm.rentSelectedBike(bike: bike, slotIndex: slotIndex),
     ),
     const SizedBox(height: 20),
-    // Bottom button rents any available bike (no specific selection)
     RentingActionButton(
       hasAvailableBikes: vm.hasAvailableBikes,
       onRent: () => vm.handleRentBike(),

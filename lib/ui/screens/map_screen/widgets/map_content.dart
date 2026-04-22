@@ -180,7 +180,6 @@ class _MapViewState extends State<_MapView> {
           backgroundColor: Colors.white,
           body: Stack(
             children: [
-              // Map
               Positioned.fill(
                 child: FlutterMap(
                   mapController: _mapController,
@@ -203,7 +202,6 @@ class _MapViewState extends State<_MapView> {
                 ),
               ),
 
-              // Search bar
               Positioned(
                 top: 16,
                 left: 12,
@@ -226,7 +224,6 @@ class _MapViewState extends State<_MapView> {
                 ),
               ),
 
-              // Pickup countdown banner — shown when user has reserved bike
               if (vm.hasPendingPickup)
                 Positioned(
                   left: 0,

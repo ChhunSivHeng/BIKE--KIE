@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../model/station.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable widget for station information card
 class StationInfoCard extends StatelessWidget {
   final Station station;
   final bool isFavorite;
@@ -35,7 +34,6 @@ class StationInfoCard extends StatelessWidget {
           ),
           Row(
             children: [
-              // Principle 9: Help & Documentation - Add tooltip
               IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -46,7 +44,6 @@ class StationInfoCard extends StatelessWidget {
                     ? 'Remove from favorites'
                     : 'Add to favorites',
               ),
-              // Principle 3: User Control & Freedom - Easy close
               IconButton(
                 icon: const Icon(Icons.close, color: AppColors.gray600),
                 onPressed: onClose,

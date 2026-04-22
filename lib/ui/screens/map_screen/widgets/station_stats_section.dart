@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../model/station.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable widget for station statistics section
 class StationStatsSection extends StatelessWidget {
   final Station station;
   final bool isLowAvailability;
@@ -17,7 +16,6 @@ class StationStatsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Principle 1: Visibility - Stats with icon
         Row(
           children: [
             Expanded(
@@ -38,7 +36,6 @@ class StationStatsSection extends StatelessWidget {
             ),
           ],
         ),
-        // Principle 1: Visibility - Low availability warning
         if (isLowAvailability)
           Padding(
             padding: const EdgeInsets.only(top: 12),
@@ -71,8 +68,6 @@ class StationStatsSection extends StatelessWidget {
     );
   }
 }
-
-/// Reusable stat card component
 class _StatCard extends StatelessWidget {
   final String value;
   final String label;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable drag handle widget
 class DragHandle extends StatelessWidget {
   const DragHandle({super.key});
 
@@ -20,8 +19,6 @@ class DragHandle extends StatelessWidget {
     );
   }
 }
-
-/// Reusable sheet container
 class SheetContainer extends StatelessWidget {
   final Widget child;
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Display active pass status and details
 class PassStatusCard extends StatelessWidget {
   final String passType;
   final String validUntil;

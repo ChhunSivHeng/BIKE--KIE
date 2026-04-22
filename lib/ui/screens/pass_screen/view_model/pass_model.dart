@@ -126,22 +126,14 @@ class PassViewModel extends ChangeNotifier {
       PassType newType;
       
       if (current.type == selected.type) {
-        // Extend current pass: same type, add duration
         final duration = selected.endDate.difference(selected.startDate);
         newEndDate = current.endDate.add(duration);
         newType = current.type;
       } else if (current.type.isUpgradeTo(selected.type)) {
-        // Upgrade: Better type, add new duration to current end date (or start now if preferred)
-        // Here we extend the duration of the better type
         final duration = selected.endDate.difference(selected.startDate);
         newEndDate = current.endDate.add(duration);
         newType = selected.type;
       } else {
-        // Downgrade or other: Just replace? User request says:
-        // "+ more expensive or premium + new feature and day"
-        // So we treat better types as upgrades.
-        // If it's a downgrade, maybe we just queue it or replace it.
-        // For now, let's treat any different type as an upgrade/replacement that extends the duration.
         final duration = selected.endDate.difference(selected.startDate);
         newEndDate = current.endDate.add(duration);
         newType = selected.type;

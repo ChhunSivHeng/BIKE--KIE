@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Display when user has no active pass with CTA to subscribe
+
 class NoPassCard extends StatelessWidget {
   final VoidCallback onSubscribe;
 

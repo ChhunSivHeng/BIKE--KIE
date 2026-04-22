@@ -3,7 +3,6 @@ import '../../../../model/station.dart';
 import '../../../../utils/animations_util.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Reusable widget for nearby stations section with smooth animations
 class NearbyStationsSection extends StatefulWidget {
   final Station currentStation;
   final List<Station> nearbyStations;
@@ -86,8 +85,6 @@ class _NearbyStationsSectionState extends State<NearbyStationsSection>
     );
   }
 }
-
-/// Animated station switch card component
 class _AnimatedStationSwitchCard extends StatefulWidget {
   final Station station;
   final bool isActive;
@@ -122,7 +119,6 @@ class _AnimatedStationSwitchCardState extends State<_AnimatedStationSwitchCard>
     _fadeAnimation = AnimationUtils.createFadeAnimation(_controller);
     _slideAnimation = AnimationUtils.createSlideAnimation(_controller);
 
-    // Stagger animation based on index
     Future.delayed(Duration(milliseconds: widget.animationDelay), () {
       if (mounted) {
         _controller.forward();

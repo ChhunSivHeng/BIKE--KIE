@@ -4,14 +4,6 @@ import '../../../../model/pass.dart';
 import '../../../../data/repositories/userRepository/user_repository.dart';
 import '../../../../services/auth_service.dart';
 
-/// ViewModel for User Profile Screen
-///
-/// Manages:
-/// - Loading current user data from Firebase
-/// - Displaying user pass status
-/// - Logout functionality
-///
-/// Watches for pass changes to update profile display
 class UserProfileViewModel extends ChangeNotifier {
   final UserRepository _userRepository;
   final AuthService _authService;
@@ -46,7 +38,6 @@ class UserProfileViewModel extends ChangeNotifier {
     _loadUser();
   }
 
-  /// Load user data from Firebase
   Future<void> _loadUser() async {
     try {
       _isLoading = true;
@@ -63,13 +54,10 @@ class UserProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  /// Refresh user data from Firebase
   Future<void> refreshUserData() async {
     await _loadUser();
   }
 
-  /// Logout and navigate to login
   Future<bool> logout() async {
     try {
       _isLoggingOut = true;

@@ -1,27 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-/// Usage in map_content.dart:
-///
-///   Pick(
-///     stationName: vm.pickupStation?.name ?? '...',
-///     expiryTime: vm.activeRenting!.expiryTime,
-///     onConfirmPickup: () => vm.confirmPickup(),   // NEW
-///     onExpired: () async => vm.cancelPickup(),
-///     onCancel:  () async => vm.cancelPickup(),
-///   )
-///
-/// States:
-///   1. Countdown  – timer + "I've Arrived" CTA
-///   2. Arrived    – pulsing "Unlock Bike" button
-///   3. Success    – animated tick + "Ride started!" card
-///   4. Expired    – auto-fires onExpired(), shows message
-
 class Pick extends StatefulWidget {
   final String stationName;
   final DateTime expiryTime;
 
-  /// Called when user confirms pickup. Return true = success, false = error.
   final Future<bool> Function() onConfirmPickup;
   final Future<void> Function() onExpired;
   final Future<void> Function() onCancel;
@@ -50,11 +33,9 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
   bool _showPin = false;
   bool _loading = false;
 
-  // Pulse for unlock button
   late AnimationController _pulseCtrl;
   late Animation<double> _pulseAnim;
 
-  // Tick + scale for success
   late AnimationController _successCtrl;
   late Animation<double> _successScale;
   late Animation<double> _successFade;
@@ -167,8 +148,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
     if (mounted) setState(() => _loading = false);
   }
 
-  // ─── Root ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -205,8 +184,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
       ),
     );
   }
-
-  // ─── State 1: Countdown ───────────────────────────────────────────────────
 
   Widget _buildCountdown() {
     return Column(
@@ -313,7 +290,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
 
         const SizedBox(height: 20),
 
-        // I've Arrived CTA
         SizedBox(
           width: double.infinity,
           height: 52,
@@ -362,8 +338,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
       ],
     );
   }
-
-  // ─── State 2: Arrived → Unlock ────────────────────────────────────────────
 
   Widget _buildArrived() {
     return Column(
@@ -431,7 +405,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
 
         const SizedBox(height: 24),
 
-        // Pulsing Unlock button
         ScaleTransition(
           scale: _pulseAnim,
           child: SizedBox(
@@ -506,8 +479,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
     );
   }
 
-  // ─── State 3: Success ─────────────────────────────────────────────────────
-
   Widget _buildSuccess() {
     return Column(
       key: const ValueKey('success'),
@@ -515,7 +486,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
       children: [
         const SizedBox(height: 8),
 
-        // Animated green circle + tick
         ScaleTransition(
           scale: _successScale,
           child: FadeTransition(
@@ -551,7 +521,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
 
         const SizedBox(height: 24),
 
-        // Ride info card
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
@@ -590,7 +559,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
 
         const SizedBox(height: 20),
 
-        // Safety reminder
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
@@ -621,8 +589,6 @@ class _PickState extends State<Pick> with TickerProviderStateMixin {
       ],
     );
   }
-
-  // ─── State 4: Expired ─────────────────────────────────────────────────────
 
   Widget _buildExpired() {
     return Column(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 
-/// Displays a single ticket detail row (e.g., Duration: 1 hour)
 class TicketDetailRow extends StatelessWidget {
   final String label;
   final String value;

@@ -7,9 +7,9 @@ import '../../firebase/firebase_database.dart';
 import '../../../model/pass.dart';
 import 'pass_repository.dart';
 
-/// Firebase implementation of PassRepository using Realtime Database
+
 class PassRepositoryFirebase implements PassRepository {
-  /// Get all available passes from Firebase
+
   @override
   Future<List<Pass>> getPasses() async {
     try {
@@ -39,12 +39,6 @@ class PassRepositoryFirebase implements PassRepository {
     }
   }
 
-  /// Create a new temporary ticket in Firebase
-  ///
-  /// Flow:
-  /// 1. Generate unique ticket ID (ticket_timestamp_userId)
-  /// 2. POST to /passes/{ticketId}
-  /// 3. Return Pass object with ID from Firebase
   @override
   Future<Pass> createTicket({
     required String userId,

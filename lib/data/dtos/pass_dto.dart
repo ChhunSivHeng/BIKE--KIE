@@ -1,7 +1,5 @@
 import '../../model/pass.dart';
 
-/// Data Transfer Object for Pass
-/// Handles serialization/deserialization with Firebase
 class PassDto {
   final String id;
   final String type;
@@ -19,7 +17,6 @@ class PassDto {
     required this.isActive,
   });
 
-  /// Create PassDto from JSON (Firebase response)
   factory PassDto.fromJson(Map<String, dynamic> json) {
     final now = DateTime.now();
 
@@ -65,7 +62,6 @@ class PassDto {
     );
   }
 
-  /// Convert to JSON for Firebase
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -77,7 +73,6 @@ class PassDto {
     };
   }
 
-  /// Convert DTO to Pass model
   Pass toModel() {
     return Pass(
       id: id,
@@ -89,7 +84,6 @@ class PassDto {
     );
   }
 
-  /// Create DTO from Pass model
   factory PassDto.fromModel(Pass pass) {
     return PassDto(
       id: pass.id,
@@ -101,7 +95,6 @@ class PassDto {
     );
   }
 
-  /// Parse PassType from string
   static PassType _parsePassType(String type) {
     return PassType.values.firstWhere(
       (e) => e.name == type,
@@ -109,7 +102,6 @@ class PassDto {
     );
   }
 
-  /// Convert PassType to string
   static String _passTypeToString(PassType type) {
     return type.name;
   }

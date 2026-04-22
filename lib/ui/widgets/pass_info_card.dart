@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// Reusable pass information card component
-/// Displays pass details with title and info items
 class PassInfoCard extends StatelessWidget {
   final String passType;
   final List<PassDetailItem> details;
@@ -62,7 +60,6 @@ class PassInfoCard extends StatelessWidget {
   }
 }
 
-/// Model class for pass detail items
 class PassDetailItem {
   final String label;
   final String value;
@@ -70,7 +67,6 @@ class PassDetailItem {
   PassDetailItem({required this.label, required this.value});
 }
 
-/// Individual pass detail item widget
 class _PassDetailItemWidget extends StatelessWidget {
   final PassDetailItem detail;
 

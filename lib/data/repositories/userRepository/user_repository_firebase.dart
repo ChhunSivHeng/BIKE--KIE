@@ -71,8 +71,6 @@ class UserRepositoryFirebase implements UserRepository {
     }
   }
 
-  /// Stores the full bike object on the user node so batteryLevel is preserved.
-  /// Pass null to clear the active bike (e.g. when returning).
   @override
   Future<User> setActiveBike(Bike? bike) async {
     try {
@@ -93,7 +91,6 @@ class UserRepositoryFirebase implements UserRepository {
         throw Exception('Failed to update user bike (${response.statusCode})');
       }
 
-      // Re-fetch so activePass is preserved in the returned model
       return getCurrentUser();
     } catch (e) {
       throw Exception('Error setting active bike: $e');

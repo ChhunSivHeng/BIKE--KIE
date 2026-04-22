@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// AppSection - Minimal section header component
 class AppSection extends StatelessWidget {
   final String title;
   final IconData? icon;

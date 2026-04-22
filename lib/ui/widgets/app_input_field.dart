@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// AppInputField - Minimal reusable input component
 class AppInputField extends StatelessWidget {
   final String label;
   final TextEditingController controller;

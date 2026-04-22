@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../utils/app_theme.dart';
 import '../../../widgets/pass_info_card.dart';
 
-/// Displays the assigned bike's ID and battery level after renting is confirmed.
-///
-/// Returns an empty widget when [bikeId] is null (user has no active bike yet).
 class RentingBikeSection extends StatelessWidget {
   final String? bikeId;
   final int? batteryLevel;

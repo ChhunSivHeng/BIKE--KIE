@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// AppAvatar - Minimal reusable avatar component
 class AppAvatar extends StatelessWidget {
   final String name;
   final String? email;

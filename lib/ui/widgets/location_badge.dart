@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_theme.dart';
 
-/// Reusable location badge component
-/// Displays a location icon in a rounded container
 class LocationBadge extends StatelessWidget {
   final Color backgroundColor;
   final Color borderColor;

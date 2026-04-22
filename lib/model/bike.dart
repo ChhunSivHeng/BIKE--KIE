@@ -1,6 +1,6 @@
 class Bike {
   final String id;
-  final int? batteryLevel; // null for mechanical bike
+  final int? batteryLevel;
 
   const Bike({
     required this.id,

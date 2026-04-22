@@ -119,8 +119,6 @@ class _SuccessContentState extends State<SuccessContent>
                     width: double.infinity,
                     height: 56,
                     child: FilledButton(
-                      // popUntil clears RentingScreen + SuccessScreen,
-                      // landing on MapScreen where the countdown banner shows.
                       onPressed: () => Navigator.of(
                         context,
                       ).popUntil((route) => route.isFirst),
