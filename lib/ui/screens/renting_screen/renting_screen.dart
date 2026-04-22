@@ -1,4 +1,3 @@
-import 'package:bikkie/data/repositories/stationRepository/station_repository.dart';
 import 'package:bikkie/model/bike.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +41,6 @@ class RentingScreen extends StatelessWidget {
         rentingRepository: context.read<RentingRepository>(),
         userRepository: context.read<UserRepository>(),
         passRepository: context.read<PassRepository>(),
-        // stationRepository: context.read<StationRepository>(),
       ),
       child: const RentingContent(),
     );
