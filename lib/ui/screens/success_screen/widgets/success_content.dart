@@ -11,7 +11,6 @@ class SuccessContent extends StatefulWidget {
 
 class _SuccessContentState extends State<SuccessContent>
     with SingleTickerProviderStateMixin {
-  // Local animation state - does NOT drill down (avoiding state drilling)
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -19,10 +18,6 @@ class _SuccessContentState extends State<SuccessContent>
   @override
   void initState() {
     super.initState();
-    _setupAnimation();
-  }
-
-  void _setupAnimation() {
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -37,7 +32,6 @@ class _SuccessContentState extends State<SuccessContent>
 
   @override
   void dispose() {
-    // Proper resource cleanup (Listenable pattern - like ChangeNotifier disposal)
     _controller.dispose();
     super.dispose();
   }
@@ -56,7 +50,6 @@ class _SuccessContentState extends State<SuccessContent>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Success Icon
                   Container(
                     width: 120,
                     height: 120,
@@ -71,9 +64,8 @@ class _SuccessContentState extends State<SuccessContent>
                     ),
                   ),
                   const SizedBox(height: 32),
-                  // Success Title
                   const Text(
-                    'Bike rented!',
+                    'Bike Reserved!',
                     style: TextStyle(
                       color: AppColors.black,
                       fontSize: 28,
@@ -82,9 +74,8 @@ class _SuccessContentState extends State<SuccessContent>
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Success Message
                   Text(
-                    'Your bike is now reserved.\nHead to the station to pick it up!',
+                    'You have 15 minutes to pick up your bike.\nHead to the station before the timer runs out!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.gray600,
@@ -93,25 +84,65 @@ class _SuccessContentState extends State<SuccessContent>
                       height: 1.5,
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          '15:00 countdown starts now',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 48),
-                  // Back to Map Button
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: FilledButton(
-                      onPressed: () => Navigator.pop(context),
+                      // popUntil clears RentingScreen + SuccessScreen,
+                      // landing on MapScreen where the countdown banner shows.
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).popUntil((route) => route.isFirst),
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Back to Map',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.map_outlined, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            'Back to Map',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
