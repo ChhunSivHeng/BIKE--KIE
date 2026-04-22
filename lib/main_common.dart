@@ -51,10 +51,16 @@ class BikeApp extends StatefulWidget {
 class _BikeAppState extends State<BikeApp> {
   int _currentIndex = 1;
 
-  final List<Widget> _pages = [
+  void tabSwitch(int newTab) {
+    setState(() {
+      _currentIndex = newTab;
+    });
+  }
+
+  List<Widget> get _pages => [
     const PassScreen(),
     const MapScreen(),
-    const ProfileScreen(),
+    ProfileScreen(switchTab: tabSwitch),
   ];
 
   @override
@@ -68,11 +74,7 @@ class _BikeAppState extends State<BikeApp> {
           data: AppTheme.lightTheme.bottomNavigationBarTheme,
           child: BottomNavigationBar(
             currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
+            onTap: tabSwitch,
             items: [
               BottomNavigationBarItem(
                 icon: Icon(

@@ -19,7 +19,8 @@ import 'widgets/profile_content.dart';
 /// - UserRepository, AuthService provided via global Provider
 /// - Creates UserProfileViewModel with dependencies
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final Function(int newTab) switchTab;
+  const ProfileScreen({super.key, required this.switchTab});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +29,9 @@ class ProfileScreen extends StatelessWidget {
         userRepository: context.read<UserRepository>(),
         authService: context.read<AuthService>(),
       ),
-      child: const Scaffold(
+      child: Scaffold(
         backgroundColor: AppColors.gray50,
-        body: ProfileContent(),
+        body: ProfileContent(switchTab: switchTab,),
       ),
     );
   }
