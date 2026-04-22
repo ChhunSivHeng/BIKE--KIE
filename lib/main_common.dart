@@ -72,6 +72,10 @@ class _BikeAppState extends State<BikeApp> {
     super.dispose();
   }
 
+  void _switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MapViewModel>.value(
@@ -82,13 +86,17 @@ class _BikeAppState extends State<BikeApp> {
           body: IndexedStack(
             // IndexedStack keeps all pages alive — no rebuild on tab switch.
             index: _currentIndex,
-            children: const [PassScreen(), MapScreen(), ProfileScreen()],
+            children: [
+              const PassScreen(),
+              const MapScreen(),
+              ProfileScreen(switchTab: _switchTab),
+            ],
           ),
           bottomNavigationBar: BottomNavigationBarTheme(
             data: AppTheme.lightTheme.bottomNavigationBarTheme,
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
+              onTap: _switchTab,
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(
